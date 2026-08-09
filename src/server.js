@@ -10,6 +10,7 @@ import { attachUserToViews } from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
 import transactionRoutes from "./routes/transactions.js";
 import budgetRoutes from "./routes/budgets.js";
+import savingsRoutes from "./routes/savings.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,7 @@ app.get("/", (req, res) => res.render("landing"));
 app.use("/", authRoutes);
 app.use("/transactions", transactionRoutes);
 app.use("/budgets", budgetRoutes);
+app.use("/savings", savingsRoutes);
 
 app.get("/dashboard", (req, res) => {
     if (!req.session.user) return res.redirect("/login");

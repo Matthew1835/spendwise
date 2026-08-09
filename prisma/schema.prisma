@@ -119,6 +119,8 @@ model SavingsGoal {
     priority      Priority  @default(medium)
     category      String?
     description   String?
+    isCompleted   Boolean   @default(false) @map("is_completed")
+    completedAt   DateTime? @map("completed_at")
 
     user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
     contributions SavingsContribution[]
