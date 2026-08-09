@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum Role {
+    user
+    admin
+}
+
+enum TransactionType {
+    income
+    expense
+}
+
+enum PeriodType {
+    weekly
+    monthly
+    yearly
+}
+
+enum Priority {
+    low
+    medium
+    high
+}
+
+model User {
+    id            Int      @id @default(autoincrement()) @map("user_id")
+    username      String   @unique
+    email         String   @unique
+    passwordHash  String   @map("password_hash")
+    firstName     String   @map("first_name")
+    lastName      String   @map("last_name")
+    role          Role     @default(user)
+    monthlyBudget Decimal? @map("monthly_budget") @db.Decimal(10, 2)
+    currency      String   @default("USD")
+    isActive      Boolean  @default(true) @map("is_active")
+    createdAt     DateTime @default(now()) @map("created_at")
+
+    transactions            Transaction[]
+    budgets                 Budget[]
+    savingsGoals            SavingsGoal[]
+    savingsContributions    SavingsContribution[]
+    userCategorizationRules UserCategorizationRule[]
+
+    @@map("users")
+}
+
+model Category {
+    id           Int             @id @default(autoincrement()) @map("category_id")
+    categoryName String          @map("category_name")
+    categoryType TransactionType @map("category_type")
+    description  String?
+    colorCode    String?         @map("color_code")
+    icon         String?
+    isDefault    Boolean         @default(false) @map("is_default")
+
+    transactions            Transaction[]
+    budgets                 Budget[]
+    categorizationRules     CategorizationRule[]
+    userCategorizationRules UserCategorizationRule[]
+
+    @@map("categories")
+}
+
+model Transaction {
+    id               Int             @id @default(autoincrement()) @map("transaction_id")
+    userId           Int             @map("user_id")
+    categoryId       Int?            @map("category_id")
+    amount           Decimal         @db.Decimal(10, 2)
+    description      String?
+    transactionDate  DateTime        @map("transaction_date") @db.Date
+    transactionType  TransactionType @map("transaction_type")
+    paymentMethod    String          @default("cash") @map("payment_method")
+    notes            String?
+    autoCategorized  Boolean         @default(false) @map("auto_categorized")
+    createdAt        DateTime        @default(now()) @map("created_at")
+
+    user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    category Category? @relation(fields: [categoryId], references: [id])
+
+    @@map("transactions")
+}
+
+model Budget {
+    id             Int        @id @default(autoincrement()) @map("budget_id")
+    userId         Int        @map("user_id")
+    categoryId     Int?       @map("category_id")
+    budgetAmount   Decimal    @map("budget_amount") @db.Decimal(10, 2)
+    periodType     PeriodType @map("period_type")
+    startDate      DateTime   @map("start_date") @db.Date
+    endDate        DateTime?  @map("end_date") @db.Date
+    alertThreshold Decimal?   @default(0.80) @map("alert_threshold") @db.Decimal(3, 2)
+    isActive       Boolean    @default(true) @map("is_active")
+
+    user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    category Category? @relation(fields: [categoryId], references: [id])
+
+    @@map("budgets")
+}
+
+model SavingsGoal {
+    id            Int       @id @default(autoincrement()) @map("goal_id")
+    userId        Int       @map("user_id")
+    goalName      String    @map("goal_name")
+    targetAmount  Decimal   @map("target_amount") @db.Decimal(10, 2)
+    currentAmount Decimal   @default(0) @map("current_amount") @db.Decimal(10, 2)
+    deadline      DateTime? @db.Date
+    priority      Priority  @default(medium)
+    category      String?
+    description   String?
+
+    user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    contributions SavingsContribution[]
+
+    @@map("savings_goals")
+}
+
+model SavingsContribution {
+    id                 Int      @id @default(autoincrement()) @map("contribution_id")
+    goalId             Int      @map("goal_id")
+    userId             Int      @map("user_id")
+    amount             Decimal  @db.Decimal(10, 2)
+    contributionDate   DateTime @map("contribution_date") @db.Date
+    notes              String?
+
+    goal SavingsGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+    user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("savings_contributions")
+}
+
+model CategorizationRule {
+    id         Int      @id @default(autoincrement()) @map("rule_id")
+    keyword    String
+    categoryId Int      @map("category_id")
+    priority   Int      @default(0)
+    ruleType   String   @default("contains") @map("rule_type")
+    isActive   Boolean  @default(true) @map("is_active")
+
+    category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@map("categorization_rules")
+}
+
+model UserCategorizationRule {
+    id                       Int     @id @default(autoincrement()) @map("user_rule_id")
+    userId                   Int     @map("user_id")
+    keyword                  String
+    categoryId               Int     @map("category_id")
+    ruleType                 String  @default("contains") @map("rule_type")
+    priority                 Int     @default(0)
+    confidenceScore          Int     @default(0) @map("confidence_score")
+    usageCount               Int     @default(0) @map("usage_count")
+    learnedFromTransactionId Int?    @map("learned_from_transaction_id")
+
+    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@map("user_categorization_rules")
+}
