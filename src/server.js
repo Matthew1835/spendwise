@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import { attachUserToViews } from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
 import transactionRoutes from "./routes/transactions.js";
+import budgetRoutes from "./routes/budgets.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => res.render("landing"));
 app.use("/", authRoutes);
 app.use("/transactions", transactionRoutes);
+app.use("/budgets", budgetRoutes);
 
 app.get("/dashboard", (req, res) => {
     if (!req.session.user) return res.redirect("/login");
@@ -76,4 +78,4 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`SpendWise runnign on https://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`SpendWise running on https://localhost:${PORT}`));
