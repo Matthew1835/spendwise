@@ -24,11 +24,15 @@ async function autoCategorize(description, transactionType, userId) {
     const globalRules = await prisma.categorizationRule.findMany({
         where: { isActive: true, category: { categoryType: transactionType } },
         include: { category: true },
-        orderBy: { priority: "desc" },
+        orderBy: [{ priority: "desc" }, { usageCount: "desc" }],
     });
 
     const globalMatch = globalRules.find((r) => matchesRule(desc, r.keyword.toLowerCase(), r.ruleType));
     if (globalMatch) {
+        await prisma.categorizationRule.update({
+            where: { id: globalMatch.id },
+            data: { usageCount: { increment: 1 } },
+        });
         return { categoryId: globalMatch.categoryId, source: "global" };
     }
 

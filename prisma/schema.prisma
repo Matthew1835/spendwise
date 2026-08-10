@@ -148,6 +148,7 @@ model CategorizationRule {
     categoryId Int      @map("category_id")
     priority   Int      @default(0)
     ruleType   String   @default("contains") @map("rule_type")
+    usageCount Int      @default(0) @map("usage_count")
     isActive   Boolean  @default(true) @map("is_active")
 
     category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
