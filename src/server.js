@@ -12,6 +12,8 @@ import transactionRoutes from "./routes/transactions.js";
 import budgetRoutes from "./routes/budgets.js";
 import savingsRoutes from "./routes/savings.js";
 import adminRoutes from "./routes/admin.js";
+import profileRoutes from "./routes/profile.js";
+import exportRoutes from "./routes/export.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,6 +66,8 @@ app.use("/transactions", transactionRoutes);
 app.use("/budgets", budgetRoutes);
 app.use("/savings", savingsRoutes);
 app.use("/admin", adminRoutes);
+app.use("/profile", profileRoutes);
+app.use("/export", exportRoutes);
 
 app.get("/dashboard", (req, res) => {
     if (!req.session.user) return res.redirect("/login");

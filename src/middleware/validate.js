@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 
-export function handleValidationErrors(view, extraLocals = {}) {
+export function handleValidationErrors(view, extraLocals = {}, errorField = "error") {
     return async (req, res, next) => {
         const result = validationResult(req);
         if (result.isEmpty()) return next();
@@ -12,9 +12,9 @@ export function handleValidationErrors(view, extraLocals = {}) {
                 : extraLocals;
 
         res.render(view, {
-            error,
             formData: req.body,
             ...resolvedExtras,
+            [errorField]: error,
         });
     };
 }
