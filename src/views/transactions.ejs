@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/meta') %>
+    <link rel="stylesheet" href="/css/app.css">
+    <title>Transactions — SPENDwise</title>
+</head>
+<body class="app-body">
+
+    <%- include('partials/app-nav', { activeNav: 'transactions' }) %>
+
+    <main class="app-main">
+        <div class="app-topbar">
+            <div>
+                <h1 class="page-title">Transactions</h1>
+                <p class="page-sub">Every income and expense you've logged, in one place.</p>
+            </div>
+            <button type="button" class="btn btn-gold" data-modal-target="transaction-modal" data-tx-add>
+                <i class="fa-solid fa-circle-plus"></i> Add transaction
+            </button>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="form-alert form-alert--error" style="margin-bottom: var(--space-4);">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <div class="glass-card" style="margin-bottom: var(--space-5);">
+            <form method="GET" action="/transactions" class="form-grid" 
+                style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); align-items: end;">
+                <div class="form-field">
+                    <label for="filter_type">Type</label>
+                    <select id="filter_type" name="type">
+                        <option value="">All</option>
+                        <option value="income" <%= filters.type === 'income' ? 'selected' : '' %>>Income</option>
+                        <option value="expense" <%= filters.type === 'expense' ? 'selected' : '' %>>Expense</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="filter_category">Category</label>
+                    <select id="filter_category" name="category_id">
+                        <option value="">All</option>
+                        <% categories.forEach(c => { %>
+                            <option value="<%= c.id %>" <%= String(filters.category_id) === String(c.id) ? 'selected' : '' %>>
+                                <%= c.categoryName %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="filter_start">From</label>
+                    <input type="date" id="filter_start" name="start_date" value="<%= filters.start_date || '' %>">
+                </div>
+                <div class="form-field">
+                    <label for="filter_end">To</label>
+                    <input type="date" id="filter_end" name="end_date" value="<%= filters.end_date || '' %>">
+                </div>
+                <div style="display:flex; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+                    <a href="/transactions" class="btn btn-ghost btn-sm">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="glass-card">
+            <% if (transactions.length === 0) { %>
+                <p class="note">No transactions match these filters yet.</p>
+            <% } else { %>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th class="text-right">Amount</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                        <% transactions.forEach(t => { %>
+                            <tr>
+                                <td><%= t.transactionDate.toISOString().slice(0,10) %></td>
+                                <td><%= t.transactionType === 'income' ? 'Income' : 'Expense' %></td>
+                                <td><%= t.category ? t.category.categoryName : 'Uncategorized' %></td>
+                                <td><%= t.description || '—' %></td>
+                                <td class="text-right font-bold <%= t.transactionType === 'income' ? 'text-income' : 'text-expense' %>">
+                                    <%= t.transactionType === 'income' ? '+' : '-' %>$<%= Number(t.amount).toFixed(2) %>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <button
+                                        type="button"
+                                        class="btn btn-icon btn-ghost"
+                                        title="Edit"
+                                        data-modal-target="transaction-modal"
+                                        data-tx-edit
+                                        data-id="<%= t.id %>"
+                                        data-type="<%= t.transactionType %>"
+                                        data-amount="<%= t.amount %>"
+                                        data-description="<%= t.description || '' %>"
+                                        data-date="<%= t.transactionDate.toISOString().slice(0,10) %>"
+                                        data-category-id="<%= t.categoryId || '' %>"
+                                        data-payment-method="<%= t.paymentMethod || 'cash' %>"
+                                        data-notes="<%= t.notes || '' %>"
+                                        ><i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <form method="POST" action="/transactions/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this transaction?');">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="btn btn-icon btn-ghost" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('partials/transaction-modal', { categories }) %>
+
+    <script src="/js/modal.js"></script>
+    <script src="/js/transaction-form.js"></script>
+</body>
+</html>

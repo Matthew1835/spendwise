@@ -1,0 +1,59 @@
+<div class="modal-overlay" id="transaction-modal">
+    <div class="modal-box">
+        <h2 id="tx-modal-title"><i class="fa-solid fa-circle-plus"></i> Add transaction</h2>
+        <form method="POST" action="/transactions" class="form-grid" id="tx-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="return_to" value="<%= typeof returnTo !== 'undefined' ? returnTo : '/transactions' %>">
+
+            <div class="form-field">
+                <label for="tx_transaction_type">Type</label>
+                <select id="tx_transaction_type" name="transaction_type" required>
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="tx_amount">Amount</label>
+                <input type="number" step="0.01" min="0.01" id="tx_amount" name="amount" required>
+            </div>
+
+            <div class="form-field">
+                <label for="tx_description">Description</label>
+                <input type="text" id="tx_description" name="description" placeholder="e.g. Groceries at Tesco">
+            </div>
+
+            <div class="form-field">
+                <label for="tx_transaction_date">Date</label>
+                <input type="date" id="tx_transaction_date" name="transaction_date" required>
+            </div>
+
+            <div class="form-field">
+                <label for="tx_category_id">Category</label>
+                <select id="tx_category_id" name="category_id">
+                    <option value="" id="tx_category_blank_option">Auto-detect from description</option>
+                    <% categories.forEach(c => { %>
+                        <option value="<%= c.id %>"><%= c.categoryName %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="tx_payment_method">Payment method</label>
+                <input type="text" id="tx_payment_method" name="payment_method" value="cash">
+            </div>
+
+            <div class="form-field">
+                <label for="tx_notes">Notes</label>
+                <input type="text" id="tx_notes" name="notes">
+            </div>
+
+            <div style="display:flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;" id="tx-submit-btn">
+                    <i class="fa-solid fa-check"></i> Add transaction
+                </button>
+                <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

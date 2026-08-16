@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-export const createTransactionValidator = [
+const createTransactionValidator = [
     body("amount")
         .isFloat({ gt: 0 }).withMessage("Amount must be a positive number"),
 
@@ -29,4 +29,8 @@ export const createTransactionValidator = [
         .optional({ checkFalsy: true })
         .trim()
         .isLength({ max: 500 }).withMessage("Notes are too long"),
-]
+];
+
+const updateTransactionValidator = createTransactionValidator;
+
+export { createTransactionValidator, updateTransactionValidator };
