@@ -1,0 +1,28 @@
+<nav class="app-nav" aria-label="Main navigation">
+    <a href="/dashboard" class="nav-item <%= activeNav === 'dashboard' ? 'active' : '' %>">
+        <i class="fa-solid fa-gauge-high"></i><span class="nav-label">Dashboard</span>
+    </a>
+    <a href="/transactions" class="nav-item <%= activeNav === 'transactions' ? 'active' : '' %>">
+        <i class="fa-solid fa-receipt"></i><span class="nav-label">Transactions</span>
+    </a>
+    <a href="/budgets" class="nav-item <%= activeNav === 'budgets' ? 'active' : '' %>">
+        <i class="fa-solid fa-wallet"></i><span class="nav-label">Budgets</span>
+    </a>
+    <a href="/savings" class="nav-item <%= activeNav === 'savings' ? 'active' : '' %>">
+        <i class="fa-solid fa-piggy-bank"></i><span class="nav-label">Savings</span>
+    </a>
+    <a href="/profile" class="nav-item <%= activeNav === 'profile' ? 'active' : '' %>">
+        <i class="fa-solid fa-user"></i><span class="nav-label">Profile</span>
+    </a>
+    <% if (currentUser && currentUser.role === 'admin') { %>
+    <a href="/admin/dashboard" class="nav-item <%= activeNav === 'admin' ? 'active' : '' %>">
+        <i class="fa-solid fa-user-shield"></i><span class="nav-label">Admin</span>
+    </a>
+    <% } %>
+    <form method="POST" action="/logout" style="display:contents">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="nav-item" style="background:none;border:none;cursor:pointer;">
+            <i class="fa-solid fa-right-from-bracket"></i><span class="nav-label">Logout</span>
+        </button>
+    </form>
+</nav>

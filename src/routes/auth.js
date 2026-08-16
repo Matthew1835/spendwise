@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as authController from "../controllers/authController.js";
 import { registerValidator, loginValidator } from "../validators/authValidators.js";
 import { handleValidationErrors } from "../middleware/validate.js";
+import { requireRecaptcha } from "../middleware/recaptcha.js";
 import { authLimiter } from "../middleware/rateLimit.js";
 
 const router = Router();
@@ -11,6 +12,7 @@ router.post("/register",
     authLimiter,
     registerValidator,
     handleValidationErrors("register"),
+    requireRecaptcha("register"),
     authController.register,
 );
 
@@ -19,6 +21,7 @@ router.post("/login",
     authLimiter,
     loginValidator,
     handleValidationErrors("login"),
+    requireRecaptcha("login"),
     authController.login,
 );
 

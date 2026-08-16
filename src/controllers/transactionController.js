@@ -1,6 +1,11 @@
 import prisma from "../prismaClient.js";
 import { autoCategorize } from "../services/categorization.js"
 
+const ALLOWED_RETURN_PATHS = new Set(['/transactions', '/dashboard']);
+function safeReturnTo(value) {
+  return ALLOWED_RETURN_PATHS.has(value) ? value : '/transactions';
+}
+
 async function listTransactions(req, res) {
     const userId = req.session.user.id;
     const { type, category_id, start_date, end_date } = req.query;
@@ -54,7 +59,7 @@ async function createTransaction(req, res) {
         },
     });
 
-    res.redirect("/transactions");
+    res.redirect(safeReturnTo(req.body.return_to));
 }
 
 async function deleteTransaction(req, res) {

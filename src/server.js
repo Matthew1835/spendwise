@@ -8,12 +8,14 @@ import { fileURLToPath } from "url";
 
 import { attachUserToViews } from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
+import dashboardRoutes from "./routes/dashboard.js";
 import transactionRoutes from "./routes/transactions.js";
 import budgetRoutes from "./routes/budgets.js";
 import savingsRoutes from "./routes/savings.js";
 import adminRoutes from "./routes/admin.js";
 import profileRoutes from "./routes/profile.js";
 import exportRoutes from "./routes/export.js";
+import apiRoutes from "./routes/api.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,27 +58,25 @@ const { csrfSynchronisedProtection } = csrfSync({
 app.use(csrfSynchronisedProtection);
 app.use((req, res, next) => {
     res.locals.csrfToken = req.csrfToken();
+    res.locals.recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY;
     next();
 });
 
 // Routes
 app.get("/", (req, res) => res.render("landing"));
 app.use("/", authRoutes);
+app.use("dashboard", dashboardRoutes);
 app.use("/transactions", transactionRoutes);
 app.use("/budgets", budgetRoutes);
 app.use("/savings", savingsRoutes);
 app.use("/admin", adminRoutes);
 app.use("/profile", profileRoutes);
 app.use("/export", exportRoutes);
-
-app.get("/dashboard", (req, res) => {
-    if (!req.session.user) return res.redirect("/login");
-    res.render("dashboard");
-});
+app.use("/api", apiRoutes);
 
 app.use((req, res) => res.status(404).render("error", { message: "Page not found." }));
 
-// Error handler
+// Centralized error handler
 app.use((err, req, res, next) => {
     if (err && err.message === "invalid csrf token") {
         return res.status(403).render("error", { message: "Your session expired. Please go back and try again." });

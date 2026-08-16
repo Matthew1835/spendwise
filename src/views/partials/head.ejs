@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/">SpendWise</a>
+        <% if (currentUser) { %>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/transactions">Transactions</a>
+            <a href="/budgets">Budgets</a>
+            <a href="/savings">Savings</a>
+            <% if (currentUser.role === "admin") { %> <a href="/admin/dashboard">Admin</a> <% } %>
+            <a href="/profile">Profile</a>
+            <a href="/export/transactions">Export CSV</a>
+            <form action="/logout" method="POST" style="display:inline">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit">Logout</button>
+            </form>
+        <% } else { %>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        <% } %>
+    </nav>
+</body>
+</html>

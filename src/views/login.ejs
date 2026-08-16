@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partials/meta") %>
+    <link rel="stylesheet" href="/css/auth.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <title>Log in - SPENDwise</title>
+</head>
+<body>
+    <div class="split-page">
+        <div class="split-visual">
+            <div style="text-align:center;">
+                <a href="/" class="logo logo--on-dark" style="font-size:2.2rem; margin-bottom: 1rem; display:inline-flex;">
+                    <span class="logo-spend">SPEND</span><span class="logo-wise">wise</span>
+                </a>
+                <p style="color: rgba(255,251,239,0.75); max-width: 320px; margin: 0 auto;">
+                    Welcome back. Your money's been waiting for you.
+                </p>
+            </div>
+        </div>
+
+        <div class="split-form-side">
+            <div class="auth-form-wrap">
+                <h1>Welcome Back</h1>
+                <p class="auth-sub">Log in to your account.</p>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="form-alert form-alert--error"><i class="fa-solid fa-circle-exclamation"></i> <%= error %></div>
+                <% } %>
+
+                <form method="POST" action="/login">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="field">
+                        <label for="username">Username or email</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div class="recaptcha-wrap">
+                        <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+                    </div>
+
+                    <button type="submit" class="btn-block">Login</button>
+                </form>
+
+                <p class="auth-switch">Don't have an account? <a href="/register">Create Account</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

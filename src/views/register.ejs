@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partials/meta") %>
+    <link rel="stylesheet" href="/css/auth.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <title>Create your account - SPENDwise</title>
+</head>
+<body>
+    <div class="split-page">
+        <div class="split-visual">
+            <div style="text-align: center;">
+                <a href="/" class="logo logo--on-dark" style="font-size: 2.2rem; margin-bottom: 1rem; display: inline-flex;">
+                    <span class="logo-spend">SPEND</span><span class="logo-wise">wise</span>
+                </a>
+                <p style="color: rgba(255,251,239,0.75); max-width: 320px; margin: 0 auto;">
+                    Join SPENDwise and start turning every expense into a step toward financial freedom.
+                </p>
+            </div>
+        </div>
+
+        <div class="split-form-side">
+            <div class="auth-form-wrap">
+                <h1>Create Your Account</h1>
+                <p class="auth-sub">It only takes a minute.</p>
+
+                <% id (typeof error !== "undefined" && error) { %>
+                    <div class="form-alert form-alert--error">
+                        <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+                    </div>
+                <% } %>
+
+                <form action="/register" method="POST" id="register-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="first_name">First name</label>
+                            <input type="text" id="first_name" name="first_name" 
+                                value="<%= (typeof formData !== "undefined" && formData.first_name) || "" %>" required>
+                        </div>
+                        <div class="field">
+                            <label for="last_name">Last name</label>
+                            <input type="text" id="last_name" name="last_name" 
+                                value="<%= (typeof formData !== "undefined" && formData.last_name) || "" %>" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="username_field">Username</label>
+                        <input type="text" id="username_field" name="username" 
+                            value="<%= (typeof formData !== "undefined" && formData.username) || "" %>" autocomplete="off" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email" 
+                            value="<%= (typeof formData !== "undefined" && formData.email) || "" %>" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="new_password">Password</label>
+                        <input type="password" id="new_password" name="password" required>
+                        <div class="strength-meter" id="strength-meter" data-level="0">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+                        <p class="strength-label" id="strength-label"></p>
+                        <ul class="strength-checklist" id="strength-checklist">
+                            <li>At least 8 characters</li>
+                            <li>One lowercase letter</li>
+                            <li>One uppercase letter</li>
+                            <li>One number</li>
+                            <li>One special character</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="field">
+                        <label for="confirm_password">Confirm password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="monthly_budget">Monthly budget <span class="note">(optional)</span></label>
+                        <input type="number" step="0.01" min="0" id="monthly_budget" name="monthly_budget" required>
+                    </div>
+
+                    <div class="recaptcha-wrap">
+                        <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+                    </div>
+
+                    <button type="submit" class="btn-block">Register</button>
+                </form>
+
+                <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/username-check.js"></script>
+    <script src="/js/password-strength.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partials/meta") %>
+    <link rel="stylesheet" href="/css/auth.css">
+    <title>SPENDwise - Smart budgeting made simple</title>
+</head>
+<body class="auth-page">
+    <header class="auth-topbar">
+        <a href="/" class="logo logo--on-dark" aria-label="SPENDwise home">
+            <span class="logo-spend">SPEND</span><span class="logo-wise">wise</span>
+        </a>
+        <nav class="auth-nav-links">
+            <a href="/login" class="btn-pill btn-pill--ghost">Log in</a>
+            <a href="/register" class="btn-pill btn-pill--gold">Sign up</a>
+        </nav>
+    </header>
+
+    <main class="hero">
+        <div class="hero-grid">
+            <div class="">
+                <h1 class="hero-headline">
+                    <mark>Smart</mark> budgeting<br>made <mark>simple</mark>
+                </h1>
+                <p class="hero-sub">
+                    Take charge of your finances today. With SPENDwise, every expense
+                    becomes a step toward financial freedom.
+                </p>
+                <a href="/register" class="btn-pill btn-pill--gold">Get started free</a>
+            </div>
+
+            <div class="spin-badge" aria-hidden="true">
+                <svg viewBox="0 0 220 220">
+                    <defs>
+                        <path id="circlePath" d="M 110,110 m -85,0 a 85,85 0 1,1 170,0 a 85,85 0 1,1 -170,0" />
+                    </defs>
+                    <g class="spin-ring">
+                        <text>
+                            <textPath href="#circlePath" startOffset="0%">
+                                YOUR MONEY, YOUR CONTROL &#8226; SMART TRACKING FOR SMART LIVING &#8226;
+                            </textPath>
+                        </text>
+                    </g>
+                </svg>
+                <div class="spin-center"><i class="fa-solid fa-sack-dollar"></i></div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
