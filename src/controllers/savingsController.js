@@ -57,21 +57,42 @@ async function projectGoalCompletion(goal) {
     };
 }
 
-async function listGoals(req, res) {
+async function loadSavingsPageData(req) {
     const userId = req.session.user.id;
-    const goals = await prisma.savingsGoal.findMany({
-        where: { userId },
-        orderBy: [{ isCompleted: "asc" }, { deadline: "asc" }],
-    });
+
+    const [goals, recentContributions] = await Promise.all([
+        prisma.savingsGoal.findMany({ where: { userId }, orderBy: [{ isCompleted: "asc" }, { deadline: "asc" }] }),
+        prisma.savingsContribution.findMany({
+            where: { userId },
+            include: { goal: true },
+            orderBy: { contributionDate: "desc" },
+            take: 10,
+        }),
+    ]);
 
     const goalsWithProjection = await Promise.all(
-        goals.map(async (g) => ({ 
-            ...g, 
-            projection: await projectGoalCompletion(g) 
-        }))
+        goals.map(async (g) => ({ ...g, projection: await projectGoalCompletion(g) }))
     );
 
-    res.render("savings", { goals: goalsWithProjection, error: null });
+    const activeGoals = goalsWithProjection.filter((g) => !g.isCompleted);
+    const totalSavings = goalsWithProjection.reduce((sum, g) => sum + Number(g.currentAmount), 0);
+    const totalTarget = goalsWithProjection.reduce((sum, g) => sum + Number(g.targetAmount), 0);
+    const avgProgress = goalsWithProjection.length
+        ? goalsWithProjection.reduce((sum, g) => {
+            return sum + Math.min((Number(g.currentAmount) / Number(g.targetAmount)) * 100, 100), 0 
+        }) / goalsWithProjection.length
+        : 0;
+
+    return {
+        goals: goalsWithProjection,
+        recentContributions,
+        totals: { activeCount: activeGoals.length, totalSavings, totalTarget, avgProgress }
+    };
+}
+
+async function listGoals(req, res) {
+    const data = await loadSavingsPageData(req);
+    res.render("savings", { ...data, error: null });
 }
 
 async function createGoal(req, res) {
@@ -90,6 +111,30 @@ async function createGoal(req, res) {
             description,
         },
     });
+
+    res.redirect("/savings");
+}
+
+async function updateGoal(req, res) {
+    const userId = req.session.user.id;
+    const id = Number(req.params.id);
+    const { goal_name, target_amount, deadline, priority, category, description } = req.body;
+
+    const result = await prisma.savingsGoal.updateMany({
+        where: { id, userId },
+        data: {
+            goalName: goal_name,
+            targetAmount: target_amount,
+            deadline: new Date(deadline),
+            priority: priority || "medium",
+            category: category || "general",
+            description,
+        },
+    });
+
+    if (result.count === 0) {
+        return res.status(404).render("error", { message: "Savings goal not found." });
+    }
 
     res.redirect("/savings");
 }
@@ -141,4 +186,4 @@ async function deleteGoal(req, res) {
     res.redirect("/savings");
 }
 
-export { listGoals, createGoal, addContribution, deleteGoal };
+export { loadSavingsPageData, listGoals, createGoal, updateGoal, addContribution, deleteGoal };

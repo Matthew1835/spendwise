@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/meta') %>
+  <link rel="stylesheet" href="/css/app.css">
+  <title>Savings Goals — SPENDwise</title>
+</head>
+<body class="app-body">
+
+    <%- include('partials/app-nav', { activeNav: 'savings' }) %>
+
+    <main class="app-main">
+        <div class="app-topbar">
+            <div>
+                <h1 class="page-title">Savings Goals</h1>
+                <p class="page-sub">Track progress toward the things you're saving for.</p>
+            </div>
+            <button type="button" class="btn btn-gold" data-modal-target="goal-modal" data-goal-add>
+                <i class="fa-solid fa-circle-plus"></i> Add goal
+            </button>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="form-alert form-alert--error" style="margin-bottom: var(--space-4);">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <div class="card-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div>
+                <span class="stat-value"><%= totals.activeCount %></span>
+                <span class="stat-label">Active goals</span>
+            </div>
+            <div class="stat-card stat-income">
+                <div class="stat-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                <span class="stat-value">$<%= totals.totalSavings.toFixed(2) %></span>
+                <span class="stat-label">Total saved</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-flag-checkered"></i></div>
+                <span class="stat-value">$<%= totals.totalTarget.toFixed(2) %></span>
+                <span class="stat-label">Total target</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <span class="stat-value"><%= totals.avgProgress.toFixed(0) %>%</span>
+                <span class="stat-label">Average progress</span>
+            </div>
+        </div>
+
+        <% if (goals.length > 0) { %>
+        <div class="glass-card" style="margin-bottom: var(--space-5);">
+            <h3>Saved vs. target</h3>
+            <canvas id="savingsChart" height="<%= Math.max(120, goals.length * 50) %>" 
+                aria-label="Saved amount versus target per goal" role="img"></canvas>
+        </div>
+        <% } %>
+
+        <% if (goals.length === 0) { %>
+            <div class="glass-card">
+                <p class="note">No savings goals yet — add one to start tracking progress toward something.</p>
+            </div>
+        <% } else { %>
+            <div class="entity-card-grid" style="margin-bottom: var(--space-5);">
+                <% goals.forEach(g => { %>
+                    <% const pct = Math.min((Number(g.currentAmount) / Number(g.targetAmount)) * 100, 100);
+                    const daysRemaining = g.deadline ? Math.ceil((new Date(g.deadline) - new Date()) / (1000*60*60*24)) : null; %>
+                    <div class="entity-card <%= g.isCompleted ? '' : '' %>" style="<%= g.isCompleted ? 'border-color: rgba(47,174,114,0.4);' : '' %>">
+                        <div class="entity-card-head">
+                            <div class="entity-card-title">
+                                <i class="fa-solid fa-flag"></i>
+                                <%= g.goalName %>
+                                <% if (g.isCompleted) { %>
+                                    <span class="alert-badge" style="background: rgba(47,174,114,0.15); color: var(--color-income);">
+                                        <i class="fa-solid fa-check"></i> Done
+                                    </span>
+                                <% } %>
+                            </div>
+                            <div class="entity-card-actions">
+                                <% if (!g.isCompleted) { %>
+                                    <button type="button" class="btn btn-icon btn-ghost" title="Add contribution"
+                                        data-modal-target="contribution-modal" data-contrib-add
+                                        data-goal-id="<%= g.id %>" data-goal-name="<%= g.goalName %>"
+                                    ><i class="fa-solid fa-hand-holding-dollar"></i></button>
+                                    <button type="button" class="btn btn-icon btn-ghost" title="Edit"
+                                        data-modal-target="goal-modal" data-goal-edit
+                                        data-id="<%= g.id %>" data-goal-name="<%= g.goalName %>"
+                                        data-target-amount="<%= g.targetAmount %>"
+                                        data-deadline="<%= g.deadline ? g.deadline.toISOString().slice(0,10) : '' %>"
+                                        data-priority="<%= g.priority %>" data-category="<%= g.category || 'general' %>"
+                                        data-description="<%= g.description || '' %>"
+                                    ><i class="fa-solid fa-pen"></i></button>
+                                <% } %>
+                                <form method="POST" action="/savings/<%= g.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this savings goal?');">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn btn-icon btn-ghost" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="entity-stats-row">
+                            <div class="stat-block">
+                                <span class="label">Saved</span>
+                                <span class="value">$<%= Number(g.currentAmount).toFixed(2) %></span>
+                            </div>
+                            <div class="stat-block" style="text-align:right;">
+                                <span class="label">Target</span>
+                                <span class="value">$<%= Number(g.targetAmount).toFixed(2) %> (<%= pct.toFixed(0) %>%)</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: <%= pct %>%; background: <%= g.isCompleted ? 'var(--color-income)' : 'var(--color-accent)' %>;"></div>
+                        </div>
+
+                        <% if (g.deadline) { %>
+                            <div class="entity-meta">
+                                <span>Due <%= new Date(g.deadline).toISOString().slice(0,10) %></span>
+                                <span><%= daysRemaining >= 0 ? daysRemaining + ' days left' : 'Past due' %></span>
+                            </div>
+                        <% } %>
+
+                        <% if (!g.isCompleted && g.projection) { %>
+                            <% if (g.projection.insufficientData) { %>
+                                <p class="note" style="margin-top: var(--space-2);">Add more contributions to see a completion estimate.</p>
+                            <% } else if (g.projection.avgMonthlyContribution) { %>
+                                <div style="margin-top: var(--space-3); padding: var(--space-3); border-radius: var(--radius-sm); background: <%= g.projection.needsAcceleration ? 'rgba(255,169,77,0.15)' : 'rgba(47,174,114,0.12)' %>;">
+                                    <p style="margin:0; font-size: 0.82rem;">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                        Predicted: <strong><%= g.projection.predictedDate.toISOString().slice(0,10) %></strong>
+                                        (~$<%= g.projection.avgMonthlyContribution.toFixed(0) %>/mo)
+                                    </p>
+                                    <% if (g.projection.needsAcceleration) { %>
+                                        <p style="margin: 4px 0 0; font-size: 0.8rem; color: var(--color-warning); font-weight:700;">
+                                            <i class="fa-solid fa-triangle-exclamation"></i> Add $<%= g.projection.recommendedIncrease.toFixed(2) %>/month to meet your deadline
+                                        </p>
+                                    <% } else { %>
+                                        <p style="margin: 4px 0 0; font-size: 0.8rem; color: var(--color-income); font-weight:700;">
+                                            <i class="fa-solid fa-check"></i> On track to meet your goal
+                                        </p>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <div class="glass-card">
+            <h3>Recent contributions</h3>
+            <% if (recentContributions.length === 0) { %>
+                <p class="note">No contributions logged yet.</p>
+            <% } else { %>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Goal</th><th class="text-right">Amount</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <% recentContributions.forEach(c => { %>
+                                <tr>
+                                <td><%= c.contributionDate.toISOString().slice(0,10) %></td>
+                                <td><%= c.goal ? c.goal.goalName : '—' %></td>
+                                <td class="text-right font-bold text-income">+$<%= Number(c.amount).toFixed(2) %></td>
+                                <td><%= c.notes || '—' %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('partials/goal-modal') %>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script>
+        window.__SAVINGS_CHART_DATA__ = <%- JSON.stringify(goals.map(g => ({
+            name: g.goalName, current: Number(g.currentAmount), target: Number(g.targetAmount),
+        }))) %>;
+    </script>
+    <script src="/js/savings-chart.js"></script>
+    <script src="/js/modal.js"></script>
+    <script src="/js/savings-form.js"></script>
+</body>
+</html>

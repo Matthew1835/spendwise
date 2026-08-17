@@ -1,0 +1,86 @@
+<div class="modal-overlay" id="goal-modal">
+    <div class="modal-box">
+        <h2 id="goal-modal-title"><i class="fa-solid fa-circle-plus"></i> Add savings goal</h2>
+        <form method="POST" action="/savings" class="form-grid" id="goal-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="form-field">
+                <label for="goal_name">Goal name</label>
+                <input type="text" id="goal_name" name="goal_name" required>
+            </div>
+
+            <div class="form-field">
+                <label for="goal_target_amount">Target amount</label>
+                <input type="number" step="0.01" min="0.01" id="goal_target_amount" name="target_amount" required>
+            </div>
+
+            <div class="form-field" id="goal_current_amount_field">
+                <label for="goal_current_amount">Starting amount <span class="note">(optional)</span></label>
+                <input type="number" step="0.01" min="0" id="goal_current_amount" name="current_amount" value="0">
+            </div>
+
+            <div class="form-field">
+                <label for="goal_deadline">Deadline</label>
+                <input type="date" id="goal_deadline" name="deadline" required>
+            </div>
+
+            <div class="form-field">
+                <label for="goal_priority">Priority</label>
+                <select id="goal_priority" name="priority">
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="goal_category">Category</label>
+                <input type="text" id="goal_category" name="category" value="general">
+            </div>
+
+            <div class="form-field">
+                <label for="goal_description">Description <span class="note">(optional)</span></label>
+                <input type="text" id="goal_description" name="description">
+            </div>
+
+            <div style="display:flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;" id="goal-submit-btn">
+                    <i class="fa-solid fa-check"></i> Add goal
+                </button>
+                <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="contribution-modal">
+    <div class="modal-box">
+        <h2><i class="fa-solid fa-hand-holding-dollar"></i> Add contribution</h2>
+        <p class="note" id="contribution-goal-name" style="margin-top:-0.5rem;"></p>
+        <form method="POST" action="/savings" class="form-grid" id="contribution-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="form-field">
+                <label for="contrib_amount">Amount</label>
+                <input type="number" step="0.01" min="0.01" id="contrib_amount" name="amount" required>
+            </div>
+
+            <div class="form-field">
+                <label for="contrib_date">Date</label>
+                <input type="date" id="contrib_date" name="contribution_date" required>
+            </div>
+
+            <div class="form-field">
+                <label for="contrib_notes">Notes <span class="note">(optional)</span></label>
+                <input type="text" id="contrib_notes" name="notes">
+            </div>
+
+            <div style="display:flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;">
+                    <i class="fa-solid fa-check"></i> Add contribution
+                </button>
+                <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
