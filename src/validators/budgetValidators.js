@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-export const createBudgetValidator = [
+const createBudgetValidator = [
     body("category_id")
         .notEmpty().withMessage("Category is required")
         .isInt({ min: 1 }).withMessage("Invalid category"),
@@ -31,3 +31,7 @@ export const createBudgetValidator = [
         .optional({ checkFalsy: true })
         .isFloat({ min: 0, max: 1 }).withMessage("Alert threshold must be between 0 and 1"),
 ];
+
+const updateBudgetValidator = createBudgetValidator;
+
+export { createBudgetValidator, updateBudgetValidator };

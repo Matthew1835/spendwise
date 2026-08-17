@@ -1,0 +1,53 @@
+<div class="modal-overlay" id="budget-modal">
+    <div class="modal-box">
+        <h2 id="bg-modal-title"><i class="fa-solid fa-circle-plus"></i> Add budget</h2>
+        <form method="POST" action="/budgets" class="form-grid" id="bg-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="form-field">
+                <label for="bg_category_id">Category</label>
+                <select id="bg_category_id" name="category_id" required>
+                    <% categories.forEach(c => { %>
+                        <option value="<%= c.id %>"><%= c.categoryName %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="bg_budget_amount">Budget amount</label>
+                <input type="number" step="0.01" min="0.01" id="bg_budget_amount" name="budget_amount" required>
+            </div>
+
+            <div class="form-field">
+                <label for="bg_period_type">Period</label>
+                <select id="bg_period_type" name="period_type">
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="bg_start_date">Start date</label>
+                <input type="date" id="bg_start_date" name="start_date" required>
+            </div>
+
+            <div class="form-field">
+                <label for="bg_end_date">End date</label>
+                <input type="date" id="bg_end_date" name="end_date" required>
+            </div>
+
+            <div class="form-field">
+                <label for="bg_alert_threshold">Alert me at <span class="note">(0–1, e.g. 0.8 = 80%)</span></label>
+                <input type="number" step="0.01" min="0" max="1" id="bg_alert_threshold" name="alert_threshold" value="0.8">
+            </div>
+
+            <div style="display:flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;" id="bg-submit-btn">
+                    <i class="fa-solid fa-check"></i> Add budget
+                </button>
+                <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

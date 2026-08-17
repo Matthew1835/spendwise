@@ -1,8 +1,7 @@
 import { Router } from "express";
-import prisma from "../prismaClient.js";
 import { requireLogin } from "../middleware/auth.js";
 import * as budgetController from "../controllers/budgetController.js";
-import { createBudgetValidator } from "../validators/budgetValidators.js";
+import { createBudgetValidator, updateBudgetValidator } from "../validators/budgetValidators.js";
 import { handleValidationErrors } from "../middleware/validate.js";
 
 const router = Router();
@@ -13,15 +12,14 @@ router.get("/", budgetController.listBudgets);
 
 router.post("/",
     createBudgetValidator,
-    handleValidationErrors("budget", async (req) => ({
-        budgets: await prisma.budget.findMany({
-            where: { userId: req.session.user.id },
-            include: { category: true },
-            orderBy: { startDate: "desc" },
-        }),
-        categories: await prisma.category.findMany({ where: { categoryType: "expense" } }),
-    })),
+    handleValidationErrors("budget", budgetController.loadBudgetsPageData),
     budgetController.createBudget,
+);
+
+router.post("/:id/edit",
+    updateBudgetValidator,
+    handleValidationErrors("budgets", budgetController.loadBudgetsPageData),
+    budgetController.updateBudget,
 );
 
 router.post("/:id/delete", budgetController.deleteBudget);
