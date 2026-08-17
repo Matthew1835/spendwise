@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/meta') %>
+  <link rel="stylesheet" href="/css/app.css">
+  <title>Manage Users — SPENDwise</title>
+</head>
+<body class="app-body">
+
+    <%- include('../partials/app-nav', { activeNav: 'admin' }) %>
+
+    <main class="app-main">
+        <div class="app-topbar">
+            <div>
+                <h1 class="page-title"><i class="fa-solid fa-users"></i> Manage Users</h1>
+                <p class="page-sub">Search, suspend, or remove accounts.</p>
+            </div>
+        </div>
+
+        <%- include('../partials/admin-tabs', { adminTab: 'users' }) %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="form-alert form-alert--error" style="margin-bottom: var(--space-4);">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <% const adminCount = users.filter(u => u.role === 'admin').length;
+            const activeCount = users.filter(u => u.isActive).length;
+            const suspendedCount = users.length - activeCount; %>
+        <div class="card-grid">
+            <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-users"></i></div><span class="stat-value"><%= users.length %></span><span class="stat-label">Showing</span></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-user-shield"></i></div><span class="stat-value"><%= adminCount %></span><span class="stat-label">Admins</span></div>
+            <div class="stat-card stat-income"><div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div><span class="stat-value"><%= activeCount %></span><span class="stat-label">Active</span></div>
+            <div class="stat-card stat-expense"><div class="stat-icon"><i class="fa-solid fa-ban"></i></div><span class="stat-value"><%= suspendedCount %></span><span class="stat-label">Suspended</span></div>
+        </div>
+
+        <div class="glass-card" style="margin-bottom: var(--space-5);">
+            <form method="GET" action="/admin/users" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); align-items: end;">
+                <div class="form-field">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" name="search" placeholder="Name, username, email…" value="<%= filters.search || '' %>">
+                </div>
+                <div class="form-field">
+                    <label for="role">Role</label>
+                    <select id="role" name="role">
+                        <option value="">All roles</option>
+                        <option value="user" <%= filters.role === 'user' ? 'selected' : '' %>>User</option>
+                        <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-filter"></i> Filter
+                    </button>
+                    <a href="/admin/users" class="btn btn-ghost btn-sm">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="glass-card">
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Txns</th>
+                            <th>Income</th>
+                            <th>Expenses</th>
+                            <th>Joined</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(u => { %>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap: var(--space-2);">
+                                        <div class="avatar-sm <%= u.role === 'admin' ? 'role-admin' : '' %>">
+                                            <%= (u.firstName[0] + u.lastName[0]).toUpperCase() %>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight:600;"><%= u.firstName %> <%= u.lastName %></div>
+                                            <div class="note" style="font-size:0.75rem;">@<%= u.username %> &middot; <%= u.email %></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge <%= u.role === 'admin' ? 'badge-gold' : 'badge-muted' %>"><%= u.role === 'admin' ? 'Admin' : 'User' %></span></td>
+                                <td><span class="badge <%= u.isActive ? 'badge-success' : '' %>" style="<%= !u.isActive ? 'background: rgba(232,93,93,0.15); color: var(--color-danger);' : '' %>"><%= u.isActive ? 'Active' : 'Suspended' %></span></td>
+                                <td><%= u.transactionCount %></td>
+                                <td class="text-income">$<%= u.totalIncome.toFixed(2) %></td>
+                                <td class="text-expense">$<%= u.totalExpenses.toFixed(2) %></td>
+                                <td><%= u.createdAt.toISOString().slice(0,10) %></td>
+                                <td style="white-space:nowrap;">
+                                    <form method="POST" action="/admin/users/<%= u.id %>/toggle-status" style="display:inline">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="btn btn-icon btn-ghost" title="<%= u.isActive ? 'Suspend' : 'Reactivate' %>">
+                                            <i class="fa-solid <%= u.isActive ? 'fa-ban' : 'fa-rotate-left' %>"></i>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="/admin/users/<%= u.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this user and all their data?');">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="btn btn-icon btn-ghost" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

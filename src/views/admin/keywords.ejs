@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/meta') %>
+    <link rel="stylesheet" href="/css/app.css">
+    <title>Keyword Rules — SPENDwise</title>
+</head>
+<body class="app-body">
+
+    <%- include('../partials/app-nav', { activeNav: 'admin' }) %>
+
+    <main class="app-main">
+        <div class="app-topbar">
+            <div>
+                <h1 class="page-title"><i class="fa-solid fa-key"></i> Keyword Rules</h1>
+                <p class="page-sub">The dictionary auto-categorization uses to guess a transaction's category.</p>
+            </div>
+            <button type="button" class="btn btn-gold" data-modal-target="keyword-modal" data-kw-add>
+                <i class="fa-solid fa-circle-plus"></i> Add rule
+            </button>
+        </div>
+
+        <%- include('../partials/admin-tabs', { adminTab: 'keywords' }) %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="form-alert form-alert--error" style="margin-bottom: var(--space-4);">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <div class="glass-card" style="margin-bottom: var(--space-5);">
+            <form method="GET" action="/admin/keywords" class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); align-items: end;">
+                <div class="form-field">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" name="search" placeholder="Keyword…" value="<%= filters.search || '' %>">
+                </div>
+                <div class="form-field">
+                    <label for="category_id">Category</label>
+                    <select id="category_id" name="category_id">
+                        <option value="">All categories</option>
+                        <% categories.forEach(c => { %>
+                            <option value="<%= c.id %>" <%= String(filters.category_id) === String(c.id) ? 'selected' : '' %>><%= c.categoryName %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div style="display:flex; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+                    <a href="/admin/keywords" class="btn btn-ghost btn-sm">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="glass-card">
+            <% if (keywords.length === 0) { %>
+                <p class="note">No keyword rules match these filters.</p>
+            <% } else { %>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead><tr><th>Keyword</th><th>Category</th><th>Priority</th><th>Type</th><th>Usage</th><th>Status</th><th></th></tr></thead>
+                        <tbody>
+                            <% keywords.forEach(k => { %>
+                                <tr>
+                                    <td style="font-weight:600;"><%= k.keyword %></td>
+                                    <td><%= k.category ? k.category.categoryName : '—' %></td>
+                                    <td><%= k.priority %></td>
+                                    <td><span class="badge badge-muted"><%= k.ruleType %></span></td>
+                                    <td><%= k.usageCount %>&times;</td>
+                                    <td><span class="badge <%= k.isActive ? 'badge-success' : '' %>" style="<%= !k.isActive ? 'background: rgba(107,125,117,0.15); color: var(--color-muted);' : '' %>"><%= k.isActive ? 'Active' : 'Inactive' %></span></td>
+                                    <td style="white-space:nowrap;">
+                                        <button type="button" class="btn btn-icon btn-ghost" title="Edit"
+                                        data-modal-target="keyword-modal" data-kw-edit
+                                        data-id="<%= k.id %>" data-keyword="<%= k.keyword %>"
+                                        data-category-id="<%= k.categoryId %>" data-priority="<%= k.priority %>" data-rule-type="<%= k.ruleType %>"
+                                        ><i class="fa-solid fa-pen"></i></button>
+                                        <form method="POST" action="/admin/keywords/<%= k.id %>/toggle-status" style="display:inline">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="submit" class="btn btn-icon btn-ghost" title="<%= k.isActive ? 'Deactivate' : 'Activate' %>">
+                                                <i class="fa-solid <%= k.isActive ? 'fa-toggle-on' : 'fa-toggle-off' %>"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="/admin/keywords/<%= k.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this rule?');">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="submit" class="btn btn-icon btn-ghost" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('../partials/keyword-modal', { categories }) %>
+
+    <script src="/js/modal.js"></script>
+    <script src="/js/keyword-form.js"></script>
+</body>
+</html>

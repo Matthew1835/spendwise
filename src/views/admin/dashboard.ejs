@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/meta') %>
+    <link rel="stylesheet" href="/css/app.css">
+    <title>Admin Overview — SPENDwise</title>
+</head>
+<body class="app-body">
+
+    <%- include('../partials/app-nav', { activeNav: 'admin' }) %>
+
+    <main class="app-main">
+        <div class="app-topbar">
+            <div>
+                <h1 class="page-title"><i class="fa-solid fa-shield-halved"></i> Admin Overview</h1>
+                <p class="page-sub">System-wide stats across every SPENDwise account.</p>
+            </div>
+        </div>
+
+        <%- include('../partials/admin-tabs', { adminTab: 'overview' }) %>
+
+        <div class="card-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <span class="stat-value"><%= stats.totalUsers %></span>
+                <span class="stat-label">Total users</span>
+            </div>
+            <div class="stat-card stat-income">
+                <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+                <span class="stat-value"><%= stats.activeUsers %></span>
+                <span class="stat-label">Active (30d)</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+                <span class="stat-value"><%= stats.totalTransactions %></span>
+                <span class="stat-label">Transactions</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-tags"></i></div>
+                <span class="stat-value"><%= stats.totalCategories %></span>
+                <span class="stat-label">Categories</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-key"></i></div>
+                <span class="stat-value"><%= stats.totalKeywords %></span>
+                <span class="stat-label">Active keywords</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-user-plus"></i></div>
+                <span class="stat-value"><%= stats.recentRegistrations %></span>
+                <span class="stat-label">New signups (7d)</span>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="glass-card">
+                <h3>Signups — last 7 days</h3>
+                <canvas id="signupTrendChart" height="200" aria-label="New user signups per day for the last 7 days" role="img"></canvas>
+            </div>
+            <div class="glass-card">
+                <h3>Users by role</h3>
+                <canvas id="roleBreakdownChart" height="200" aria-label="Breakdown of users by role" role="img"></canvas>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3>Recent registrations</h3>
+            <% if (recentActivity.length === 0) { %>
+                <p class="note">No registrations yet.</p>
+            <% } else { %>
+                <div class="table-scroll">
+                    <table class="data-table">
+                    <thead><tr><th>Username</th><th>Email</th><th>Joined</th></tr></thead>
+                    <tbody>
+                    <% recentActivity.forEach(u => { %>
+                        <tr><td><%= u.username %></td><td><%= u.email %></td><td><%= u.createdAt.toISOString().slice(0,10) %></td></tr>
+                    <% }) %>
+                    </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script>
+        window.__ADMIN_DASHBOARD_DATA__ = {
+            signupTrend: <%- JSON.stringify(signupTrend) %>,
+            roleBreakdown: <%- JSON.stringify(roleBreakdown) %>,
+        };
+    </script>
+    <script src="/js/admin-charts.js"></script>
+</body>
+</html>

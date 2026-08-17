@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/meta') %>
+    <link rel="stylesheet" href="/css/app.css">
+    <title>Manage Categories — SPENDwise</title>
+</head>
+<body class="app-body">
+    
+    <%- include('../partials/app-nav', { activeNav: 'admin' }) %>
+
+    <main class="app-main">
+        <div class="app-topbar">
+            <div>
+                <h1 class="page-title"><i class="fa-solid fa-tags"></i> Manage Categories</h1>
+                <p class="page-sub">Categories used across every transaction, budget, and keyword rule.</p>
+            </div>
+            <button type="button" class="btn btn-gold" data-modal-target="category-modal" data-cat-add>
+                <i class="fa-solid fa-circle-plus"></i> Add category
+            </button>
+        </div>
+
+        <%- include('../partials/admin-tabs', { adminTab: 'categories' }) %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="form-alert form-alert--error" style="margin-bottom: var(--space-4);">
+                <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
+            </div>
+        <% } %>
+
+        <% ['income', 'expense'].forEach(type => {
+            const group = categories.filter(c => c.categoryType === type); %>
+            <div class="glass-card" style="margin-bottom: var(--space-5);">
+                <h3><i class="fa-solid <%= type === 'income' ? 'fa-arrow-down text-income' : 'fa-arrow-up text-expense' %>"></i> <%= type === 'income' ? 'Income categories' : 'Expense categories' %></h3>
+                <% if (group.length === 0) { %>
+                    <p class="note">No <%= type %> categories yet.</p>
+                <% } else { %>
+                    <div class="entity-card-grid">
+                        <% group.forEach(c => { %>
+                            <div class="entity-card">
+                                <div class="entity-card-head">
+                                    <div class="entity-card-title" style="align-items:center;">
+                                        <div class="category-chip" style="background: <%= c.colorCode || '#0A3D2E' %>;">
+                                            <i class="<%= c.icon || 'fa-solid fa-tag' %>"></i>
+                                        </div>
+                                        <div>
+                                            <div><%= c.categoryName %></div>
+                                            <div class="note" style="font-size:0.72rem;">
+                                                <%= c.usageCount %> transaction<%= c.usageCount === 1 ? '' : 's' %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="entity-card-actions">
+                                        <button type="button" class="btn btn-icon btn-ghost" title="Edit"
+                                            data-modal-target="category-modal" data-cat-edit
+                                            data-id="<%= c.id %>" data-category-name="<%= c.categoryName %>"
+                                            data-category-type="<%= c.categoryType %>" data-description="<%= c.description || '' %>"
+                                            data-color-code="<%= c.colorCode || '#0A3D2E' %>" data-icon="<%= c.icon || 'fa-solid fa-tag' %>"
+                                        ><i class="fa-solid fa-pen"></i></button>
+                                        <form method="POST" action="/admin/categories/<%= c.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this category?');">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="submit" class="btn btn-icon btn-ghost" title="Delete">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <% if (c.description) { %>
+                                    <p class="note" style="margin: var(--space-2) 0 0;"><%= c.description %></p>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        <% }) %>
+    </main>
+
+    <%- include('../partials/category-modal') %>
+
+    <script src="/js/modal.js"></script>
+    <script src="/js/category-form.js"></script>
+</body>
+</html>

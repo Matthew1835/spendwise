@@ -8,8 +8,8 @@ async function dashboard(req, res) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const [ totalUsers, activeUserIds, totalTransactions, totalCategories, 
-        totalKeywords, recentRegistrations, recentActivity ] = await Promise.all([
+    const [ totalUsers, activeUserIds, totalTransactions, totalCategories, totalKeywords, 
+        recentRegistrations, recentActivity, roleBreakdown, last7DaysUsers, ] = await Promise.all([
         prisma.user.count(),
         prisma.transaction.findMany({
             where: { createdAt: { gte: thirtyDaysAgo } },
@@ -25,7 +25,20 @@ async function dashboard(req, res) {
             take: 10,
             select: { id: true, username: true, email: true, createdAt: true },
         }),
+        prisma.user.groupBy({ by: ["role"], _count: { id: true } }),
+        prisma.user.findMany({ 
+            where: { createdAt: { gte: sevenDaysAgo } },
+            select: { createdAt: true }, 
+        }),
     ]);
+
+    const signupTrend = Array.from({ length: 7 }, (_, i) => {
+        const day = new Date();
+        day.setDate(day.getDate() - (6 - i));
+        const dayKey = day.toISOString().slice(0, 10);
+        const count = last7DaysUsers.filter((u) => u.createdAt.toISOString().slice(0, 10) === dayKey).length;
+        return { label: day.toLocaleDateString("en-US", { weekday: "short" }), count };
+    });
 
     res.render("admin/dashboard", {
         stats: {
@@ -37,57 +50,50 @@ async function dashboard(req, res) {
             recentRegistrations,
         },
         recentActivity,
+        roleBreakdown: roleBreakdown.map((r) => ({ role: r.role, count: r._count.id })),
+        signupTrend,
     });
 }
 
 // Users
 
-async function listUsers(req, res) {
-    const { search, role, is_active } = req.query;
-
+function buildUserWhere(query) {
+    const { search, role, is_active } = query;
     const where = {};
     if (search) {
         where.OR = [
             { username: { contains: search, mode: "insensitive" } },
             { email: { contains: search, mode: "insensitive" } },
-            { firstName: { contains: search , mode: "insensitive" } },
+            { firstName: { contains: search, mode: "insensitive" } },
             { lastName: { contains: search, mode: "insensitive" } },
         ];
     }
     if (role) where.role = role;
     if (is_active !== undefined && is_active !== "") where.isActive = is_active === "true";
+    return where;
+}
 
+async function loadUsersWithStats(query = {}) {
     const users = await prisma.user.findMany({
-        where,
+        where: buildUserWhere(query),
         orderBy: { createdAt: "desc" },
         include: { 
-            _count: { select: { transactions: true } },
-            transactions: { select: { amount: true, transactionType: true } },
+            _count: { select: { transactions: true } }, 
+            transactions: { select: { amount: true, transactionType: true } ,}
         },
     });
 
-    const usersWithTotals = users.map((u) => {
-        const totalExpenses = u.transactions
-            .filter((t) => t.transactionType === "expense")
-            .reduce((s, t) => s + Number(t.amount), 0);
-        const totalIncome = u.transactions
-            .filter((t) => t.transactionType === "income")
-            .reduce((s, t) => s + Number(t.amount), 0);
+    return users.map((u) => {
+        const totalExpenses = u.transactions.filter((t) => t.transactionType === "expense").reduce((s, t) => s + Number(t.amount), 0);
+        const totalIncome = u.transaction.filter((t) => t.transactionType === "income").reduce((s, t) => s + Number(t.amount), 0);
         const { transactions, _count, ...rest } = u;
-        
-        return { 
-            ...rest,
-            transactionCount: _count.transactions,
-            totalExpenses,
-            totalIncome,
-        };
+        return { ...rest, transactionCount: _count.transactions, totalExpenses, totalIncome };
     });
+}
 
-    res.render("admin/users", { 
-        users: usersWithTotals, 
-        filters: req.query, 
-        error: null 
-    });
+async function listUsers(req, res) {
+    const users = await loadUsersWithStats(req.query);
+    res.render("admin/users", { users, filters: req.query, error: null });
 }
 
 async function toggleUserStatus(req, res) {
@@ -105,9 +111,8 @@ async function toggleUserStatus(req, res) {
 async function deleteUser(req, res) {
     const id = Number(req.params.id);
     if (id === req.session.user.id) {
-        const users = await prisma.user.findMany({ orderBy: { createdAt: "desc" } });
         return res.render("admin/users", {
-            users,
+            users: await loadUsersWithStats({}),
             filters: {},
             error: "Cannot delete your own account.",
         });
@@ -123,17 +128,11 @@ async function loadCategoriesWithUsage() {
         include: { _count: { select: { transactions: true } } },
         orderBy: [{ categoryType: "asc" }, { categoryName: "asc" }],
     });
-    return categories.map(({ ...c, _count }) => ({ 
-        ...c, 
-        usageCount: c._count.transactions,
-    }));
+    return categories.map((c) => ({ ...c, usageCount: c._count.transactions, }));
 }
 
 async function listCategories(req, res) {
-    res.render("admin/categories", {
-        categories: await loadCategoriesWithUsage(), 
-        error: null,
-    });
+    res.render("admin/categories", { categories: await loadCategoriesWithUsage(), error: null, });
 }
 
 async function createCategory(req, res) {
@@ -258,7 +257,7 @@ async function deleteKeyword(req, res) {
 
 export {
     dashboard,
-    listUsers, toggleUserStatus, deleteUser,
+    loadUsersWithStats, listUsers, toggleUserStatus, deleteUser,
     loadCategoriesWithUsage, listCategories, createCategory, updateCategory, deleteCategory,
     loadKeywordsAndCategories, listKeywords, createKeyword, updateKeyword, toggleKeywordStatus, deleteKeyword,
 }

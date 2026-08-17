@@ -1,0 +1,7 @@
+<div class="admin-accent-bar"></div>
+<nav class="segmented-tabs" aria-label="Admin sections">
+    <a href="/admin/dashboard" class="<%= adminTab === 'overview' ? 'active' : '' %>"><i class="fa-solid fa-gauge-high"></i> Overview</a>
+    <a href="/admin/users" class="<%= adminTab === 'users' ? 'active' : '' %>"><i class="fa-solid fa-users"></i> Users</a>
+    <a href="/admin/categories" class="<%= adminTab === 'categories' ? 'active' : '' %>"><i class="fa-solid fa-tags"></i> Categories</a>
+    <a href="/admin/keywords" class="<%= adminTab === 'keywords' ? 'active' : '' %>"><i class="fa-solid fa-key"></i> Keyword Rules</a>
+</nav>
