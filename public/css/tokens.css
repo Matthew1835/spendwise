@@ -1,0 +1,102 @@
+/* ============================================================
+   SPENDwise design tokens
+   Palette: deep forest green (brand) + gold (accent)
+   Two visual languages in this app:
+   - "flat" (landing/login/register): bold color-block, high contrast
+   - "glass" (everything after login): light glassmorphism, cute & airy
+   ============================================================ */
+
+:root {
+  /* Brand */
+  --color-primary: #0A3D2E;      /* deep forest green */
+  --color-primary-light: #1B6B4D;
+  --color-primary-dark: #062A20;
+  --color-accent: #FFD700;       /* gold */
+  --color-accent-soft: #FFE99A;
+
+  /* Neutrals (warm, not clinical gray) */
+  --color-cream: #FFFBEF;
+  --color-cream-dim: #FBF4DD;
+  --color-ink: #1A2E27;          /* near-black w/ green undertone */
+  --color-muted: #6B7D75;
+  --color-border: rgba(10, 61, 46, 0.12);
+
+  /* Semantic (soft, not harsh) */
+  --color-income: #2FAE72;       /* distinct from brand green */
+  --color-expense: #FF6B6B;      /* soft coral, not alarm-red */
+  --color-warning: #FFA94D;
+  --color-danger: #E85D5D;
+
+  /* Glass surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-shadow: 0 8px 32px rgba(10, 61, 46, 0.10);
+  --glass-blur: blur(16px);
+
+  /* Type */
+  --font-display: 'Quicksand', sans-serif;   /* logo + headings: rounded, cute */
+  --font-body: 'Plus Jakarta Sans', sans-serif; /* body: warm, geometric, not Inter */
+
+  /* Spacing / radius scale */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Breakpoints as custom props for reference (used in media queries directly) */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-cream);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-2);
+}
+
+a { color: var(--color-primary); }
+
+button, input, select, textarea { font-family: inherit; font-size: inherit; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* Logo wordmark: two-tone, works on light or dark backgrounds via modifier */
+.logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  display: inline-flex;
+}
+.logo .logo-spend { color: var(--color-primary); }
+.logo .logo-wise { color: var(--color-accent); }
+.logo--on-dark .logo-spend { color: var(--color-cream); }
+.logo--on-dark .logo-wise { color: var(--color-accent); }
