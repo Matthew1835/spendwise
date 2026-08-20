@@ -38,11 +38,6 @@ const createGoalValidator = [
         .optional({ checkFalsy: true })
         .isIn([ "low", "medium", "high" ]).withMessage("Invalid priority"),
 
-    body("category")
-        .optional({ checkFalsy: true })
-        .trim()
-        .isLength({ max: 50 }).withMessage("Category is too long"),
-
     body("description")
         .optional({ checkFalsy: true })
         .trim()
@@ -76,11 +71,6 @@ const updateGoalValidator = [
     body("priority")
         .optional({ checkFalsy: true })
         .isIn([ "low", "medium", "high" ]).withMessage("Invalid priority"),
-
-    body("category")
-        .optional({ checkFalsy: true })
-        .trim()
-        .isLength({ max: 50 }).withMessage("Category is too long"),
 
     body("description")
         .optional({ checkFalsy: true })

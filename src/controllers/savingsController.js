@@ -97,7 +97,7 @@ async function listGoals(req, res) {
 
 async function createGoal(req, res) {
     const userId = req.session.user.id;
-    const { goal_name, target_amount, current_amount, deadline, priority, category, description } = req.body;
+    const { goal_name, target_amount, current_amount, deadline, priority, description } = req.body;
 
     await prisma.savingsGoal.create({
         data: {
@@ -107,7 +107,6 @@ async function createGoal(req, res) {
             currentAmount: current_amount || 0,
             deadline: new Date(deadline),
             priority: priority || "medium",
-            category: category || "general",
             description,
         },
     });
@@ -118,7 +117,7 @@ async function createGoal(req, res) {
 async function updateGoal(req, res) {
     const userId = req.session.user.id;
     const id = Number(req.params.id);
-    const { goal_name, target_amount, deadline, priority, category, description } = req.body;
+    const { goal_name, target_amount, deadline, priority, description } = req.body;
 
     const result = await prisma.savingsGoal.updateMany({
         where: { id, userId },
@@ -127,7 +126,6 @@ async function updateGoal(req, res) {
             targetAmount: target_amount,
             deadline: new Date(deadline),
             priority: priority || "medium",
-            category: category || "general",
             description,
         },
     });

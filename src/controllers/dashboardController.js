@@ -3,7 +3,7 @@ import prisma from "../prismaClient.js";
 function monthBounds(monthsAgo) {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth() - monthsAgo, 1);
-    const end = new Date(now.getFullYear(), now.getMonth - monthsAgo + 1, 0, 23, 59, 59);
+    const end = new Date(now.getFullYear(), now.getMonth() - monthsAgo + 1, 0, 23, 59, 59);
     return { start, end, label: start.toLocaleDateString("en-US", { month: "short" }) };
 }
 

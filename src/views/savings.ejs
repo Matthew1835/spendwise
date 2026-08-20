@@ -52,8 +52,9 @@
         <% if (goals.length > 0) { %>
         <div class="glass-card" style="margin-bottom: var(--space-5);">
             <h3>Saved vs. target</h3>
-            <canvas id="savingsChart" height="<%= Math.max(120, goals.length * 50) %>" 
-                aria-label="Saved amount versus target per goal" role="img"></canvas>
+            <div class="chart-wrap">
+                <canvas id="savingsChart" aria-label="Saved amount versus target per goal" role="img"></canvas>
+            </div>
         </div>
         <% } %>
 
@@ -88,8 +89,7 @@
                                         data-id="<%= g.id %>" data-goal-name="<%= g.goalName %>"
                                         data-target-amount="<%= g.targetAmount %>"
                                         data-deadline="<%= g.deadline ? g.deadline.toISOString().slice(0,10) : '' %>"
-                                        data-priority="<%= g.priority %>" data-category="<%= g.category || 'general' %>"
-                                        data-description="<%= g.description || '' %>"
+                                        data-priority="<%= g.priority %>" data-description="<%= g.description || '' %>"
                                     ><i class="fa-solid fa-pen"></i></button>
                                 <% } %>
                                 <form method="POST" action="/savings/<%= g.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this savings goal?');">
@@ -159,10 +159,10 @@
                         <tbody>
                             <% recentContributions.forEach(c => { %>
                                 <tr>
-                                <td><%= c.contributionDate.toISOString().slice(0,10) %></td>
-                                <td><%= c.goal ? c.goal.goalName : '—' %></td>
-                                <td class="text-right font-bold text-income">+$<%= Number(c.amount).toFixed(2) %></td>
-                                <td><%= c.notes || '—' %></td>
+                                    <td><%= c.contributionDate.toISOString().slice(0,10) %></td>
+                                    <td><%= c.goal ? c.goal.goalName : '—' %></td>
+                                    <td class="text-right font-bold text-income">+$<%= Number(c.amount).toFixed(2) %></td>
+                                    <td><%= c.notes || '—' %></td>
                                 </tr>
                             <% }) %>
                         </tbody>
@@ -174,12 +174,13 @@
 
     <%- include('partials/goal-modal') %>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script>
         window.__SAVINGS_CHART_DATA__ = <%- JSON.stringify(goals.map(g => ({
             name: g.goalName, current: Number(g.currentAmount), target: Number(g.targetAmount),
         }))) %>;
     </script>
+    <script src="/js/chart-utils.js"></script>
     <script src="/js/savings-chart.js"></script>
     <script src="/js/modal.js"></script>
     <script src="/js/savings-form.js"></script>

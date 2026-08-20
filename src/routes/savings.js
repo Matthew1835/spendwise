@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { requireLogin } from "../middleware/auth.js";
+import { requireLogin, blockAdmin } from "../middleware/auth.js";
 import * as savingsController from "../controllers/savingsController.js";
 import { createGoalValidator, updateGoalValidator, addContributionValidator } from "../validators/savingsValidator.js";
 import { handleValidationErrors } from "../middleware/validate.js";
 
 const router = Router();
 
-router.use(requireLogin);
+router.use(requireLogin, blockAdmin);
 
 router.get("/", savingsController.listGoals);
 

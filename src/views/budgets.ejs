@@ -68,7 +68,9 @@
             <% if (budgets.length === 0) { %>
                 <p class="note">Add a budget to see it charted here.</p>
             <% } else { %>
-                <canvas id="budgetChart" height="220" aria-label="Budgeted versus spent amount per budget" role="img"></canvas>
+                <div class="chart-wrap">
+                    <canvas id="budgetChart" aria-label="Budgeted versus spent amount per budget" role="img"></canvas>
+                </div>            
             <% } %>
         </div>
 
@@ -142,7 +144,7 @@
 
     <%- include('partials/budget-modal', { categories }) %>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script>
         window.__BUDGETS_CHART_DATA__ = <%- JSON.stringify(budgets.map(b => ({
             label: (b.category ? b.category.categoryName : 'Uncategorized') + ' (' + b.startDate.toISOString().slice(0,10) + ')',
@@ -151,6 +153,7 @@
             spentAmount: b.spentAmount,
         }))) %>;
     </script>
+    <script src="/js/chart-utils.js"></script>
     <script src="/js/budget-chart.js"></script>
     <script src="/js/modal.js"></script>
     <script src="/js/budget-form.js"></script>

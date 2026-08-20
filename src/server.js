@@ -65,7 +65,7 @@ app.use((req, res, next) => {
 // Routes
 app.get("/", (req, res) => res.render("landing"));
 app.use("/", authRoutes);
-app.use("dashboard", dashboardRoutes);
+app.use("/dashboard", dashboardRoutes);
 app.use("/transactions", transactionRoutes);
 app.use("/budgets", budgetRoutes);
 app.use("/savings", savingsRoutes);

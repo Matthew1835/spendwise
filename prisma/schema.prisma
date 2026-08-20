@@ -117,7 +117,6 @@ model SavingsGoal {
     currentAmount Decimal   @default(0) @map("current_amount") @db.Decimal(10, 2)
     deadline      DateTime? @db.Date
     priority      Priority  @default(medium)
-    category      String?
     description   String?
     isCompleted   Boolean   @default(false) @map("is_completed")
     completedAt   DateTime? @map("completed_at")

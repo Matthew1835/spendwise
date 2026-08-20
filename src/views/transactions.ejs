@@ -73,8 +73,8 @@
                             <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th class="text-right">Amount</th><th></th></tr>
                         </thead>
                         <tbody>
-                        <% transactions.forEach(t => { %>
-                            <tr>
+                            <% transactions.forEach((t, i) => { %>
+                                <tr data-tx-row class="<%= i >= 10 ? 'is-hidden-row' : '' %>">
                                 <td><%= t.transactionDate.toISOString().slice(0,10) %></td>
                                 <td><%= t.transactionType === 'income' ? 'Income' : 'Expense' %></td>
                                 <td><%= t.category ? t.category.categoryName : 'Uncategorized' %></td>
@@ -84,31 +84,40 @@
                                 </td>
                                 <td style="white-space: nowrap;">
                                     <button
-                                        type="button"
-                                        class="btn btn-icon btn-ghost"
-                                        title="Edit"
-                                        data-modal-target="transaction-modal"
-                                        data-tx-edit
-                                        data-id="<%= t.id %>"
-                                        data-type="<%= t.transactionType %>"
-                                        data-amount="<%= t.amount %>"
-                                        data-description="<%= t.description || '' %>"
-                                        data-date="<%= t.transactionDate.toISOString().slice(0,10) %>"
-                                        data-category-id="<%= t.categoryId || '' %>"
-                                        data-payment-method="<%= t.paymentMethod || 'cash' %>"
-                                        data-notes="<%= t.notes || '' %>"
-                                        ><i class="fa-solid fa-pen"></i>
-                                    </button>
+                                    type="button"
+                                    class="btn btn-icon btn-ghost"
+                                    title="Edit"
+                                    data-modal-target="transaction-modal"
+                                    data-tx-edit
+                                    data-id="<%= t.id %>"
+                                    data-type="<%= t.transactionType %>"
+                                    data-amount="<%= t.amount %>"
+                                    data-description="<%= t.description || '' %>"
+                                    data-date="<%= t.transactionDate.toISOString().slice(0,10) %>"
+                                    data-category-id="<%= t.categoryId || '' %>"
+                                    data-payment-method="<%= t.paymentMethod || 'cash' %>"
+                                    data-notes="<%= t.notes || '' %>"
+                                    ><i class="fa-solid fa-pen"></i></button>
                                     <form method="POST" action="/transactions/<%= t.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this transaction?');">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <button type="submit" class="btn btn-icon btn-ghost" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                     </form>
                                 </td>
-                            </tr>
-                        <% }) %>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
+                <% if (transactions.length > 10) { %>
+                    <div class="table-more">
+                    <button type="button" class="btn btn-ghost btn-sm" id="tx-see-more">
+                        See more <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <p class="note table-more-count">
+                        Showing <span id="tx-shown">10</span> of <%= transactions.length %>
+                    </p>
+                    </div>
+                <% } %>
             <% } %>
         </div>
     </main>
@@ -117,5 +126,6 @@
 
     <script src="/js/modal.js"></script>
     <script src="/js/transaction-form.js"></script>
+    <script src="/js/transaction-pagination.js"></script>
 </body>
 </html>

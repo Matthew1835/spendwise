@@ -66,10 +66,14 @@
     padding: var(--space-3) var(--space-2);
     gap: var(--space-2);
     width: 60px;
-    transition: width 0.2s ease;
+    transition: width 0.2s ease, border-radius 0.2s ease;
     overflow: hidden;
   }
-  .app-nav:hover { width: 190px; align-items: stretch; }
+  .app-nav:hover {
+    width: 190px;
+    align-items: stretch;
+    border-radius: var(--radius-lg); /* pill radius would stretch into a blob at this width/height ratio */
+  }
   .app-nav .nav-item {
     flex-direction: row;
     justify-content: flex-start;
@@ -78,8 +82,9 @@
     font-size: 0.9rem;
     padding: var(--space-2) var(--space-3);
   }
-  .app-nav .nav-item i { width: 20px; text-align: center; }
-  .app-nav .nav-label { display: inline; }
+  .app-nav .nav-item i { width: 20px; text-align: center; flex-shrink: 0; }
+  .app-nav .nav-label { display: none; } /* only shown on hover, see below */
+  .app-nav:hover .nav-label { display: inline; }
 }
 
 .app-main {
@@ -115,9 +120,12 @@
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
   margin-bottom: var(--space-5);
+}
+@media (min-width: 640px) {
+  .card-grid { gap: var(--space-4); }
 }
 
 .charts-row {
@@ -146,7 +154,7 @@
   color: var(--color-primary);
   margin-bottom: var(--space-2);
 }
-.stat-card .stat-value { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; color: var(--color-primary); display: block; }
+.stat-card .stat-value { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.15rem, 4vw, 1.5rem); color: var(--color-primary); display: block; }
 .stat-card .stat-label { font-size: 0.8rem; color: var(--color-muted); }
 .stat-card.stat-income .stat-value { color: var(--color-income); }
 .stat-card.stat-expense .stat-value { color: var(--color-expense); }
@@ -280,6 +288,17 @@
 .info-item .label { display: block; font-size: 0.75rem; color: var(--color-muted); margin-bottom: 2px; }
 .info-item .value { font-weight: 600; color: var(--color-ink); }
 
+/* Two columns on wider screens, collapses to one on narrow phones —
+   used where a hardcoded 2-col inline grid had no mobile fallback. */
+.two-col-field-row { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+@media (min-width: 420px) {
+  .two-col-field-row { grid-template-columns: 1fr 1fr; }
+}
+.color-icon-field-row { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+@media (min-width: 420px) {
+  .color-icon-field-row { grid-template-columns: 1fr 2fr; }
+}
+
 .hidden { display: none !important; }
 
 .danger-zone-card { border: 1px solid rgba(232,93,93,0.35) !important; }
@@ -334,6 +353,19 @@
 .badge-success { background: rgba(47,174,114,0.15); color: var(--color-income); }
 .badge-muted { background: rgba(107,125,117,0.15); color: var(--color-muted); }
 .badge-gold { background: rgba(255,215,0,0.25); color: var(--color-primary-dark); }
+
+/* ---------- Chart containers ---------- */
+.chart-wrap { position: relative; width: 100%; }
+
+/* ---------- Transactions: progressive "see more" rows ---------- */
+
+.is-hidden-row { display: none; }
+.table-more {
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: var(--space-1);
+  margin-top: var(--space-4);
+}
+.table-more-count { margin: 0; font-size: 0.78rem; }
 
 /* ---------- Misc ---------- */
 

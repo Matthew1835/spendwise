@@ -24,7 +24,7 @@
                 <h1>Create Your Account</h1>
                 <p class="auth-sub">It only takes a minute.</p>
 
-                <% id (typeof error !== "undefined" && error) { %>
+                <% if (typeof error !== "undefined" && error) { %>
                     <div class="form-alert form-alert--error">
                         <i class="fa-solid fa-circle-exclamation"></i> <%= error %>
                     </div>
@@ -98,5 +98,6 @@
 
     <script src="/js/username-check.js"></script>
     <script src="/js/password-strength.js"></script>
+    <script src="/js/password-toggle.js"></script>
 </body>
 </html>

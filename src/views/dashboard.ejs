@@ -6,12 +6,13 @@
     <title>Dashboard — SPENDwise</title>
 </head>
 <body class="app-body">
+
     <%- include('partials/app-nav', { activeNav: 'dashboard' }) %>
 
     <main class="app-main">
         <div class="app-topbar">
-            <div class="">
-                <h1 class="page-title">Hi, <%= currentUser.firstName %></h1>
+            <div>
+                <h1 class="page-title">Hi, <%= currentUser.firstName %> 👋</h1>
                 <p class="page-sub">Here's your financial overview for <%= monthLabel %>.</p>
             </div>
             <button type="button" class="btn btn-gold" data-modal-target="transaction-modal" data-tx-add>
@@ -45,14 +46,18 @@
         <div class="charts-row">
             <div class="glass-card">
                 <h3>Income vs. Expense — last 6 months</h3>
-                <canvas id="trendChart" height="220" aria-label="Income versus expense over the last 6 months" role="img"></canvas>
+                <div class="chart-wrap">
+                    <canvas id="trendChart" aria-label="Income versus expense over the last 6 months" role="img"></canvas>
+                </div>            
             </div>
             <div class="glass-card">
                 <h3>Spending by category</h3>
                 <% if (expenseByCategory.length === 0) { %>
                     <p class="note">No expenses recorded this month yet.</p>
                 <% } %>
-                <canvas id="categoryChart" height="220" aria-label="Expense breakdown by category" role="img"></canvas>
+                <div class="chart-wrap">
+                    <canvas id="categoryChart" aria-label="Expense breakdown by category" role="img"></canvas>
+                </div>
             </div>
         </div>
 
@@ -66,21 +71,21 @@
             <% } else { %>
                 <div class="table-scroll">
                     <table class="data-table">
-                    <thead>
-                        <tr><th>Date</th><th>Description</th><th>Category</th><th class="text-right">Amount</th></tr>
-                    </thead>
-                    <tbody>
-                    <% recentTransactions.forEach(t => { %>
-                        <tr>
-                        <td><%= t.transactionDate.toISOString().slice(0,10) %></td>
-                        <td><%= t.description || '—' %></td>
-                        <td><%= t.category ? t.category.categoryName : 'Uncategorized' %></td>
-                        <td class="text-right font-bold <%= t.transactionType === 'income' ? 'text-income' : 'text-expense' %>">
-                            <%= t.transactionType === 'income' ? '+' : '-' %>$<%= Number(t.amount).toFixed(2) %>
-                        </td>
-                        </tr>
-                    <% }) %>
-                    </tbody>
+                        <thead>
+                            <tr><th>Date</th><th>Description</th><th>Category</th><th class="text-right">Amount</th></tr>
+                        </thead>
+                        <tbody>
+                            <% recentTransactions.forEach(t => { %>
+                                <tr>
+                                <td><%= t.transactionDate.toISOString().slice(0,10) %></td>
+                                <td><%= t.description || '—' %></td>
+                                <td><%= t.category ? t.category.categoryName : 'Uncategorized' %></td>
+                                <td class="text-right font-bold <%= t.transactionType === 'income' ? 'text-income' : 'text-expense' %>">
+                                    <%= t.transactionType === 'income' ? '+' : '-' %>$<%= Number(t.amount).toFixed(2) %>
+                                </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
                     </table>
                 </div>
             <% } %>
@@ -94,7 +99,7 @@
                         <tr><th>Month</th><th>Income</th><th>Expense</th><th>Savings</th><th>Net</th></tr>
                     </thead>
                     <tbody>
-                    <% trend.forEach(m => { %>
+                        <% trend.forEach(m => { %>
                         <tr>
                             <td class="font-bold"><%= m.label %></td>
                             <td class="text-income">$<%= m.income.toFixed(2) %></td>
@@ -102,23 +107,25 @@
                             <td>$<%= m.savings.toFixed(2) %></td>
                             <td class="font-bold">$<%= m.net.toFixed(2) %></td>
                         </tr>
-                    <% }) %>
+                        <% }) %>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <%- include('partials/quick-add-transaction', { categories, returnTo: '/dashboard' }) %>
+    <%- include('partials/transaction-modal', { categories, returnTo: '/dashboard' }) %>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script>
-    window.__DASHBOARD_DATA__ = {
-        trend: <%- JSON.stringify(trend) %>,
-        expenseByCategory: <%- JSON.stringify(expenseByCategory) %>,
-    };
+        window.__DASHBOARD_DATA__ = {
+            trend: <%- JSON.stringify(trend) %>,
+            expenseByCategory: <%- JSON.stringify(expenseByCategory) %>,
+        };
     </script>
+    <script src="/js/chart-utils.js"></script>
     <script src="/js/dashboard-charts.js"></script>
     <script src="/js/modal.js"></script>
+    <script src="/js/transaction-form.js"></script>
 </body>
 </html>

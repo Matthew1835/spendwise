@@ -1,7 +1,28 @@
-<%- include('partials/head') %>
-<main>
-  <h1>Oops</h1>
-  <p><%= message %></p>
-</main>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/meta') %>
+    <link rel="stylesheet" href="/css/app.css">
+    <title>Something's off — SPENDwise</title>
+</head>
+<body class="app-body">
+    <% if (currentUser) { %>
+        <%- include('partials/app-nav', { activeNav: '' }) %>
+    <% } %>
+
+    <main class="app-main" style="display:flex; align-items:center; justify-content:center; min-height: 70vh;">
+        <div class="glass-card" style="max-width: 420px; text-align:center;">
+            <div style="font-size: 2.5rem; color: var(--color-accent); margin-bottom: var(--space-3);">
+                <i class="fa-solid fa-compass-drafting"></i>
+            </div>
+            <h2 style="margin-bottom: var(--space-2);">Something's off</h2>
+            <p class="note" style="margin-bottom: var(--space-4);"><%= message %></p>
+            <% if (currentUser) { %>
+                <a href="/dashboard" class="btn btn-gold"><i class="fa-solid fa-house"></i> Back to dashboard</a>
+            <% } else { %>
+                <a href="/login" class="btn btn-gold"><i class="fa-solid fa-right-to-bracket"></i> Back to login</a>
+            <% } %>
+        </div>
+    </main>
 </body>
 </html>

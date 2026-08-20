@@ -7,7 +7,7 @@ const emptyMessages = {
     profileError: null,
     profileSuccess: null,
     passwordError: null,
-    profileSuccess: null,
+    passwordSuccess: null,
     deleteError: null,
 };
 

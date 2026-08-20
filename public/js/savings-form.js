@@ -13,7 +13,6 @@
             current_amount: document.getElementById('goal_current_amount'),
             deadline: document.getElementById('goal_deadline'),
             priority: document.getElementById('goal_priority'),
-            category: document.getElementById('goal_category'),
             description: document.getElementById('goal_description'),
         };
 
@@ -24,7 +23,6 @@
             currentAmountField.style.display = '';
             goalForm.reset();
             fields.current_amount.value = '0';
-            fields.category.value = 'general';
         }
 
         function populateForEdit(data) {
@@ -38,7 +36,6 @@
             fields.target_amount.value = data.targetAmount;
             fields.deadline.value = data.deadline;
             fields.priority.value = data.priority;
-            fields.category.value = data.category;
             fields.description.value = data.description || '';
         }
 
@@ -47,13 +44,12 @@
         document.querySelectorAll('[data-goal-edit]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 populateForEdit({
-                id: btn.dataset.id,
-                goalName: btn.dataset.goalName,
-                targetAmount: btn.dataset.targetAmount,
-                deadline: btn.dataset.deadline,
-                priority: btn.dataset.priority,
-                category: btn.dataset.category,
-                description: btn.dataset.description,
+                    id: btn.dataset.id,
+                    goalName: btn.dataset.goalName,
+                    targetAmount: btn.dataset.targetAmount,
+                    deadline: btn.dataset.deadline,
+                    priority: btn.dataset.priority,
+                    description: btn.dataset.description,
                 });
             });
         });

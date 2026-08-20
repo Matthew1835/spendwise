@@ -1,4 +1,7 @@
 <nav class="app-nav" aria-label="Main navigation">
+    <% const isAdmin = currentUser && currentUser.role === "admin"; %>
+
+    <% if (!isAdmin) { %>
     <a href="/dashboard" class="nav-item <%= activeNav === 'dashboard' ? 'active' : '' %>">
         <i class="fa-solid fa-gauge-high"></i><span class="nav-label">Dashboard</span>
     </a>
@@ -11,14 +14,18 @@
     <a href="/savings" class="nav-item <%= activeNav === 'savings' ? 'active' : '' %>">
         <i class="fa-solid fa-piggy-bank"></i><span class="nav-label">Savings</span>
     </a>
+    <% } %>
+
     <a href="/profile" class="nav-item <%= activeNav === 'profile' ? 'active' : '' %>">
         <i class="fa-solid fa-user"></i><span class="nav-label">Profile</span>
     </a>
-    <% if (currentUser && currentUser.role === 'admin') { %>
+
+    <% if (isAdmin) { %>
     <a href="/admin/dashboard" class="nav-item <%= activeNav === 'admin' ? 'active' : '' %>">
         <i class="fa-solid fa-user-shield"></i><span class="nav-label">Admin</span>
     </a>
     <% } %>
+
     <form method="POST" action="/logout" style="display:contents">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button type="submit" class="nav-item" style="background:none;border:none;cursor:pointer;">

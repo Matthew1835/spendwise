@@ -55,11 +55,15 @@
         <div class="charts-row">
             <div class="glass-card">
                 <h3>Signups — last 7 days</h3>
-                <canvas id="signupTrendChart" height="200" aria-label="New user signups per day for the last 7 days" role="img"></canvas>
+                <div class="chart-wrap">
+                    <canvas id="signupTrendChart" aria-label="New user signups per day for the last 7 days" role="img"></canvas>
+                </div>
             </div>
             <div class="glass-card">
                 <h3>Users by role</h3>
-                <canvas id="roleBreakdownChart" height="200" aria-label="Breakdown of users by role" role="img"></canvas>
+                <div class="chart-wrap">
+                    <canvas id="roleBreakdownChart" aria-label="Breakdown of users by role" role="img"></canvas>
+                </div>
             </div>
         </div>
 
@@ -82,13 +86,14 @@
         </div>
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script>
         window.__ADMIN_DASHBOARD_DATA__ = {
             signupTrend: <%- JSON.stringify(signupTrend) %>,
             roleBreakdown: <%- JSON.stringify(roleBreakdown) %>,
         };
     </script>
+    <script src="/js/chart-utils.js"></script>
     <script src="/js/admin-charts.js"></script>
 </body>
 </html>

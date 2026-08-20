@@ -1,6 +1,5 @@
 import { stringify } from "csv-stringify";
 import prisma from "../prismaClient.js";
-import { Priority } from "../../generated/prisma";
 
 function sendCsv(res, filename, rows) {
     const csv = stringify(rows);

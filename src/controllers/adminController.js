@@ -79,13 +79,13 @@ async function loadUsersWithStats(query = {}) {
         orderBy: { createdAt: "desc" },
         include: { 
             _count: { select: { transactions: true } }, 
-            transactions: { select: { amount: true, transactionType: true } ,}
+            transactions: { select: { amount: true, transactionType: true } },
         },
     });
 
     return users.map((u) => {
         const totalExpenses = u.transactions.filter((t) => t.transactionType === "expense").reduce((s, t) => s + Number(t.amount), 0);
-        const totalIncome = u.transaction.filter((t) => t.transactionType === "income").reduce((s, t) => s + Number(t.amount), 0);
+        const totalIncome = u.transactions.filter((t) => t.transactionType === "income").reduce((s, t) => s + Number(t.amount), 0);
         const { transactions, _count, ...rest } = u;
         return { ...rest, transactionCount: _count.transactions, totalExpenses, totalIncome };
     });
