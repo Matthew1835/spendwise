@@ -18,7 +18,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-5) var(--space-5) 0;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) 0;
+}
+@media (min-width: 768px) {
+  .auth-topbar { padding: var(--space-5) var(--space-5) 0; }
 }
 
 .auth-topbar .auth-nav-links {
@@ -147,7 +152,7 @@
   display: grid;
   grid-template-columns: 1fr;
 }
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .split-page { grid-template-columns: 1fr 1fr; }
 }
 
@@ -159,7 +164,7 @@
   justify-content: center;
   padding: var(--space-6);
 }
-@media (min-width: 900px) { .split-visual { display: flex; } }
+@media (min-width: 1024px) { .split-visual { display: flex; } }
 
 .split-form-side {
   background: var(--color-cream);
@@ -168,7 +173,7 @@
   justify-content: center;
   padding: var(--space-5);
 }
-@media (min-width: 640px) { .split-form-side { padding: var(--space-7); } }
+@media (min-width: 768px) { .split-form-side { padding: var(--space-7); } }
 
 .auth-form-wrap { max-width: 420px; width: 100%; margin: 0 auto; }
 
@@ -176,7 +181,7 @@
 .auth-form-wrap .auth-sub { color: var(--color-muted); margin-bottom: var(--space-5); }
 
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-@media (max-width: 420px) { .field-row { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .field-row { grid-template-columns: 1fr; } }
 
 .field { margin-bottom: var(--space-4); }
 .field label {
@@ -246,4 +251,22 @@
 .auth-switch { text-align: center; margin-top: var(--space-4); font-size: 0.9rem; color: var(--color-muted); }
 .auth-switch a { font-weight: 700; text-decoration: none; }
 
-.recaptcha-wrap { margin: var(--space-4) 0; }
+.recaptcha-wrap {
+  margin: var(--space-4) 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* ---------- Landing responsive rules ---------- */
+
+/* Mobile: the topbar auth buttons are redundant with the hero CTA, so drop
+   them and leave the logo alone. */
+@media (max-width: 767px) {
+  .auth-topbar .auth-nav-links { display: none; }
+}
+
+/* The rotating text circle is decorative — laptop (1024px) and up only. */
+.spin-badge { display: none; }
+@media (min-width: 1024px) {
+  .spin-badge { display: block; }
+}

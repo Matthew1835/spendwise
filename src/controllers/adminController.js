@@ -9,7 +9,7 @@ async function dashboard(req, res) {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const [ totalUsers, activeUserIds, totalTransactions, totalCategories, totalKeywords, 
-        recentRegistrations, recentActivity, roleBreakdown, last7DaysUsers, ] = await Promise.all([
+        recentRegistrations, recentActivity, last7DaysUsers, ] = await Promise.all([
         prisma.user.count(),
         prisma.transaction.findMany({
             where: { createdAt: { gte: thirtyDaysAgo } },
@@ -25,7 +25,6 @@ async function dashboard(req, res) {
             take: 10,
             select: { id: true, username: true, email: true, createdAt: true },
         }),
-        prisma.user.groupBy({ by: ["role"], _count: { id: true } }),
         prisma.user.findMany({ 
             where: { createdAt: { gte: sevenDaysAgo } },
             select: { createdAt: true }, 
@@ -50,7 +49,6 @@ async function dashboard(req, res) {
             recentRegistrations,
         },
         recentActivity,
-        roleBreakdown: roleBreakdown.map((r) => ({ role: r.role, count: r._count.id })),
         signupTrend,
     });
 }

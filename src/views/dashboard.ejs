@@ -43,52 +43,52 @@
             </div>
         </div>
 
-        <div class="charts-row">
-            <div class="glass-card">
-                <h3>Income vs. Expense — last 6 months</h3>
-                <div class="chart-wrap">
-                    <canvas id="trendChart" aria-label="Income versus expense over the last 6 months" role="img"></canvas>
-                </div>            
+        <div class="glass-card" style="margin-bottom: var(--space-5);">
+            <h3>Income vs. Expense — last 6 months</h3>
+            <div class="chart-wrap">
+                <canvas id="trendChart" aria-label="Income versus expense over the last 6 months" role="img"></canvas>
             </div>
+        </div>
+
+        <div class="chart-and-table-row">
             <div class="glass-card">
                 <h3>Spending by category</h3>
                 <% if (expenseByCategory.length === 0) { %>
                     <p class="note">No expenses recorded this month yet.</p>
                 <% } %>
-                <div class="chart-wrap">
+                <div class="chart-wrap chart-wrap--pie">
                     <canvas id="categoryChart" aria-label="Expense breakdown by category" role="img"></canvas>
                 </div>
             </div>
-        </div>
 
-        <div class="glass-card" style="margin-bottom: var(--space-5);">
-            <div class="card-section-head">
-                <h3>Recent transactions</h3>
-                <a href="/transactions" class="btn btn-ghost btn-sm">View all <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-            <% if (recentTransactions.length === 0) { %>
-                <p class="note">No transactions yet — add your first one to get started.</p>
-            <% } else { %>
-                <div class="table-scroll">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>Date</th><th>Description</th><th>Category</th><th class="text-right">Amount</th></tr>
-                        </thead>
-                        <tbody>
-                            <% recentTransactions.forEach(t => { %>
-                                <tr>
-                                <td><%= t.transactionDate.toISOString().slice(0,10) %></td>
-                                <td><%= t.description || '—' %></td>
-                                <td><%= t.category ? t.category.categoryName : 'Uncategorized' %></td>
-                                <td class="text-right font-bold <%= t.transactionType === 'income' ? 'text-income' : 'text-expense' %>">
-                                    <%= t.transactionType === 'income' ? '+' : '-' %>$<%= Number(t.amount).toFixed(2) %>
-                                </td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
+            <div class="glass-card">
+                <div class="card-section-head">
+                    <h3>Recent transactions</h3>
+                    <a href="/transactions" class="btn btn-ghost btn-sm">View all <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
-            <% } %>
+                <% if (recentTransactions.length === 0) { %>
+                    <p class="note">No transactions yet — add your first one to get started.</p>
+                <% } else { %>
+                    <div class="table-scroll table-scroll--fixed">
+                        <table class="data-table data-table--compact">
+                            <thead>
+                                <tr><th>Date</th><th>Category</th><th class="text-right col-amount">Amount</th></tr>
+                            </thead>
+                            <tbody>
+                                <% recentTransactions.forEach(t => { %>
+                                <tr>
+                                    <td><%= t.transactionDate.toISOString().slice(0,10) %></td>
+                                    <td><%= t.category ? t.category.categoryName : 'Uncategorized' %></td>
+                                    <td class="text-right font-bold <%= t.transactionType === 'income' ? 'text-income' : 'text-expense' %>">
+                                    <%= t.transactionType === 'income' ? '+' : '-' %>$<%= Number(t.amount).toFixed(2) %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
         </div>
 
         <div class="glass-card">

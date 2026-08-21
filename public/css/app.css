@@ -54,7 +54,7 @@
 .app-nav .nav-item:hover { color: var(--color-primary); background: rgba(255,215,0,0.25); }
 .app-nav .nav-label { display: none; }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .app-nav {
     left: var(--space-4);
     right: auto;
@@ -93,7 +93,7 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .app-main { padding: var(--space-6) var(--space-6) var(--space-6) 100px; }
 }
 
@@ -124,7 +124,7 @@
   gap: var(--space-3);
   margin-bottom: var(--space-5);
 }
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .card-grid { gap: var(--space-4); }
 }
 
@@ -134,8 +134,24 @@
   gap: var(--space-4);
   margin-bottom: var(--space-5);
 }
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .charts-row { grid-template-columns: 2fr 1fr; }
+}
+
+/* Chart beside a data table. Side by side from tablet (768px) up; the
+   table column gets the extra room. */
+.chart-and-table-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .chart-and-table-row { grid-template-columns: 1fr 1.4fr; }
+}
+@media (min-width: 1024px) {
+  .chart-and-table-row { grid-template-columns: 1fr 2fr; }
 }
 
 .stat-card {
@@ -158,6 +174,27 @@
 .stat-card .stat-label { font-size: 0.8rem; color: var(--color-muted); }
 .stat-card.stat-income .stat-value { color: var(--color-income); }
 .stat-card.stat-expense .stat-value { color: var(--color-expense); }
+
+/* ---------- Chart containers ----------
+   Charts size themselves from their container width using the shared
+   aspect-ratio helper in chart-utils.js, so the same chart reads the same
+   on every page. The pie gets a capped width so it never balloons. */
+.chart-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Doughnut/pie: needs less room than a time-series chart, and the legend
+   sits underneath it, so keep it visibly smaller. */
+.chart-wrap--pie { max-width: 320px; margin: 0 auto; }
+@media (min-width: 1024px) { .chart-wrap--pie { max-width: 360px; } }
+
+/* Never let a canvas push the page wider than its card. */
+.chart-wrap canvas { width: 100% !important; }
+
+/* The savings chart is the one exception: a horizontal bar chart needs
+   height proportional to how many goals there are, so savings.ejs sets an
+   inline height that overrides the values above. */
 
 /* ---------- Buttons ---------- */
 
@@ -213,8 +250,37 @@
 
 /* ---------- Data tables ---------- */
 
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* Grid children default to min-width:auto, so a wide table (min-width 480px)
+   stretches its whole column and pushes the page sideways on phones.
+   min-width:0 lets the column shrink and the table scroll inside its card. */
+.charts-row > *,
+.chart-and-table-row > *,
+.card-grid > *,
+.entity-card-grid > * { min-width: 0; }
+
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
 .data-table { width: 100%; border-collapse: collapse; min-width: 480px; }
+
+/* Fixed-height, vertically scrolling table body (recent transactions).
+   The header stays put while the rows scroll. */
+.table-scroll--fixed {
+  max-height: 250px;
+  overflow-y: auto;
+}
+.table-scroll--fixed thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* Amount column: numbers are short, so stop it eating table width. */
+.data-table .col-amount,
+.data-table td.text-right {
+  width: 1%;
+  white-space: nowrap;
+}
 .data-table thead th {
   text-align: left; color: var(--color-muted); font-size: 0.78rem;
   font-weight: 600; padding: var(--space-2) var(--space-2); text-transform: uppercase; letter-spacing: 0.03em;
@@ -291,11 +357,11 @@
 /* Two columns on wider screens, collapses to one on narrow phones —
    used where a hardcoded 2-col inline grid had no mobile fallback. */
 .two-col-field-row { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
-@media (min-width: 420px) {
+@media (min-width: 768px) {
   .two-col-field-row { grid-template-columns: 1fr 1fr; }
 }
 .color-icon-field-row { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
-@media (min-width: 420px) {
+@media (min-width: 768px) {
   .color-icon-field-row { grid-template-columns: 1fr 2fr; }
 }
 
@@ -354,8 +420,13 @@
 .badge-muted { background: rgba(107,125,117,0.15); color: var(--color-muted); }
 .badge-gold { background: rgba(255,215,0,0.25); color: var(--color-primary-dark); }
 
-/* ---------- Chart containers ---------- */
-.chart-wrap { position: relative; width: 100%; }
+/* ---------- Misc ---------- */
+
+.error, .form-alert--error { color: var(--color-danger); }
+.success { color: var(--color-income); }
+.note { color: var(--color-muted); font-size: 0.85rem; }
+.page-title { margin-bottom: var(--space-1); }
+.page-sub { color: var(--color-muted); margin-bottom: var(--space-5); }
 
 /* ---------- Transactions: progressive "see more" rows ---------- */
 
@@ -367,10 +438,8 @@
 }
 .table-more-count { margin: 0; font-size: 0.78rem; }
 
-/* ---------- Misc ---------- */
+/* Compact 3-column table (dashboard recent transactions) — doesn't need
+   the 480px floor the wide tables use, so it fits a narrow column. */
+.data-table--compact { min-width: 240px; }
 
-.error, .form-alert--error { color: var(--color-danger); }
-.success { color: var(--color-income); }
-.note { color: var(--color-muted); font-size: 0.85rem; }
-.page-title { margin-bottom: var(--space-1); }
-.page-sub { color: var(--color-muted); margin-bottom: var(--space-5); }
+table-row

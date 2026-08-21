@@ -1,4 +1,4 @@
-import { stringify } from "csv-stringify";
+import { stringify } from "csv-stringify/sync";
 import prisma from "../prismaClient.js";
 
 function sendCsv(res, filename, rows) {
@@ -166,7 +166,9 @@ async function exportMonthlySummary(req, res) {
         });
     }
 
-    const filename = `SpendWise_Summary_${now.toISOString().slice(0, 7).csv}`;
+    const filename = `SpendWise_Summary_${now.toISOString().slice(0, 7)}.csv`;
+    // const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    // const filename = `SpendWise_Summary_${yearMonth}.csv`;
     sendCsv(res, filename, rows);
 }
 

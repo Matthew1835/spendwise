@@ -30,7 +30,7 @@
 
             <div class="form-field">
                 <label for="tx_category_id">Category</label>
-                <select id="tx_category_id" name="category_id">
+                <select class="category-list" id="tx_category_id" name="category_id">
                     <option value="" id="tx_category_blank_option">Auto-detect from description</option>
                     <% categories.forEach(c => { %>
                         <option value="<%= c.id %>"><%= c.categoryName %></option>

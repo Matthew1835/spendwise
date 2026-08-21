@@ -63,8 +63,8 @@
         },
         options: {
             responsive: true,
-            plugins: {
-            legend: { position: 'bottom', labels: { color: ink, font: { family: 'Plus Jakarta Sans', size: 11 }, boxWidth: 12 } },
+                plugins: {
+                legend: { position: 'bottom', labels: { color: ink, font: { family: 'Plus Jakarta Sans', size: 11 }, boxWidth: 12 } },
             },
         },
         });

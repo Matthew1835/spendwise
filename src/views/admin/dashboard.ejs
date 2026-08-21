@@ -52,18 +52,10 @@
             </div>
         </div>
 
-        <div class="charts-row">
-            <div class="glass-card">
-                <h3>Signups — last 7 days</h3>
-                <div class="chart-wrap">
-                    <canvas id="signupTrendChart" aria-label="New user signups per day for the last 7 days" role="img"></canvas>
-                </div>
-            </div>
-            <div class="glass-card">
-                <h3>Users by role</h3>
-                <div class="chart-wrap">
-                    <canvas id="roleBreakdownChart" aria-label="Breakdown of users by role" role="img"></canvas>
-                </div>
+        <div class="glass-card" style="margin-bottom: var(--space-5);">
+            <h3>Signups — last 7 days</h3>
+            <div class="chart-wrap">
+                <canvas id="signupTrendChart" aria-label="New user signups per day for the last 7 days" role="img"></canvas>
             </div>
         </div>
 
@@ -90,7 +82,6 @@
     <script>
         window.__ADMIN_DASHBOARD_DATA__ = {
             signupTrend: <%- JSON.stringify(signupTrend) %>,
-            roleBreakdown: <%- JSON.stringify(roleBreakdown) %>,
         };
     </script>
     <script src="/js/chart-utils.js"></script>
