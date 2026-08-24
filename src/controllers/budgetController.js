@@ -1,4 +1,5 @@
 import prisma from "../prismaClient.js";
+import { loadUsableCategories } from './categoryController.js';
 
 async function findOverlappingBudget(userId, categoryId, startDate, endDate, excludeBudgetId = null) {
     return prisma.budget.findFirst({
@@ -51,7 +52,7 @@ async function loadBudgetsPageData(req) {
     const userId = req.session.user.id;
     const [budgets, categories] = await Promise.all([
         prisma.budget.findMany({ where: { userId }, include: { category: true }, orderBy: { startDate: "desc" } }),
-        prisma.category.findMany({ where: { categoryType: "expense" } }),
+        loadUsableCategories(userId, "expense"),
     ]);
 
     const budgetsWithProgress = await attachProgress(userId, budgets);

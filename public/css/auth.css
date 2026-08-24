@@ -254,7 +254,7 @@
 .recaptcha-wrap {
   margin: var(--space-4) 0;
   max-width: 100%;
-  overflow-x: auto;
+  /* overflow-x: auto; */
 }
 
 /* ---------- Landing responsive rules ---------- */

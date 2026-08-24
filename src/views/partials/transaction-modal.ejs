@@ -29,11 +29,17 @@
             </div>
 
             <div class="form-field">
-                <label for="tx_category_id">Category</label>
-                <select class="category-list" id="tx_category_id" name="category_id">
+                <label for="tx_category_id">
+                    Category
+                    <button type="button" class="btn-inline-add" data-quick-add-category data-modal-target="quick-add-category-modal"
+                        data-target-select="tx_category_id" data-lock-type="auto" data-type-source="tx_transaction_type">
+                        <i class="fa-solid fa-circle-plus"></i> New
+                    </button>
+                </label>
+                <select id="tx_category_id" name="category_id">
                     <option value="" id="tx_category_blank_option">Auto-detect from description</option>
                     <% categories.forEach(c => { %>
-                        <option value="<%= c.id %>"><%= c.categoryName %></option>
+                        <option value="<%= c.id %>" data-type="<%= c.categoryType %>"><%= c.categoryName %></option>
                     <% }) %>
                 </select>
             </div>

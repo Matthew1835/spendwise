@@ -1,0 +1,29 @@
+<div class="modal-overlay" id="quick-add-category-modal">
+    <div class="modal-box">
+        <h2><i class="fa-solid fa-circle-plus"></i> New category</h2>
+        <p class="note" id="qac-type-label" style="margin-top:-0.5rem;"></p>
+        <form id="qac-form" class="form-grid">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" id="qac_category_type" name="category_type" value="expense">
+
+            <div class="form-field">
+                <label for="qac_category_name">Name</label>
+                <input type="text" id="qac_category_name" name="category_name" required>
+            </div>
+
+            <div class="form-field">
+                <label for="qac_color_code">Color</label>
+                <input type="color" id="qac_color_code" name="color_code" value="#0A3D2E" style="height: 42px; padding: 4px;">
+            </div>
+
+            <p class="error" id="qac-error" style="display:none;"></p>
+
+            <div style="display:flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;" id="qac-submit-btn">
+                    <i class="fa-solid fa-check"></i> Create category
+                </button>
+                <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

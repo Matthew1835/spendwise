@@ -52,6 +52,7 @@ model User {
     savingsGoals            SavingsGoal[]
     savingsContributions    SavingsContribution[]
     userCategorizationRules UserCategorizationRule[]
+    categories              Category[]
 
     @@map("users")
 }
@@ -64,7 +65,9 @@ model Category {
     colorCode    String?         @map("color_code")
     icon         String?
     isDefault    Boolean         @default(false) @map("is_default")
+    userId       Int?            @map("user_id")
 
+    user                    User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
     transactions            Transaction[]
     budgets                 Budget[]
     categorizationRules     CategorizationRule[]

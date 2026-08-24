@@ -14,6 +14,13 @@ export const registerValidator = [
     body("password")
         .isLength({ min: 8 }).withMessage("Password must be at least 8 characters"),
 
+    body('confirm_password').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Passwords do not match');
+        }
+        return true;
+    }),
+
     body("first_name")
         .trim()
         .notEmpty().withMessage("First name is required"),

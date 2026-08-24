@@ -123,6 +123,7 @@ async function deleteUser(req, res) {
 
 async function loadCategoriesWithUsage() {
     const categories = await prisma.category.findMany({
+        where: { userId: null },
         include: { _count: { select: { transactions: true } } },
         orderBy: [{ categoryType: "asc" }, { categoryName: "asc" }],
     });
@@ -150,8 +151,8 @@ async function createCategory(req, res) {
 async function updateCategory(req, res){
     const id = Number(req.params.id);
     const { category_name, category_type, description, color_code, icon } = req.body;
-    await prisma.category.update({
-        where: { id },
+    const result = await prisma.category.updateMany({
+        where: { id, userId: null },
         data: {
             categoryName: category_name,
             categoryType: category_type,
@@ -160,6 +161,9 @@ async function updateCategory(req, res){
             icon,
         },
     });
+    if (result.count === 0) {
+        return res.status(404).render("error", { message: "Category not found." });
+    }
     res.redirect("/admin/categories");
 }
 
@@ -172,7 +176,7 @@ async function deleteCategory(req, res) {
             error: "Cannot delete a category that is in use.",
         });
     }
-    await prisma.category.delete({ where: { id } });
+    await prisma.category.deleteMany({ where: { id, userId: null } });
     res.redirect("/admin/categories");
 }
 

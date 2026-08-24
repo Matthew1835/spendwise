@@ -1,0 +1,33 @@
+<div class="modal-overlay" id="my-category-modal">
+    <div class="modal-box">
+        <h2 id="my-cat-modal-title"><i class="fa-solid fa-circle-plus"></i> New category</h2>
+        <form method="POST" action="/categories" class="form-grid" id="my-cat-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="form-field">
+                <label for="my_cat_name">Name</label>
+                <input type="text" id="my_cat_name" name="category_name" required>
+            </div>
+
+            <div class="form-field">
+                <label for="my_cat_type">Type</label>
+                <select id="my_cat_type" name="category_type" required>
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="my_cat_color">Color</label>
+                <input type="color" id="my_cat_color" name="color_code" value="#0A3D2E" style="height: 42px; padding: 4px;">
+            </div>
+
+            <div style="display:flex; gap: 0.75rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;" id="my-cat-submit-btn">
+                    <i class="fa-solid fa-check"></i> Add category
+                </button>
+                <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

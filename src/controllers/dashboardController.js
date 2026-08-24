@@ -1,4 +1,5 @@
 import prisma from "../prismaClient.js";
+import { loadUsableCategories } from './categoryController.js';
 
 function monthBounds(monthsAgo) {
     const now = new Date();
@@ -61,7 +62,7 @@ export async function showDashboard(req, res) {
             orderBy: { transactionDate: "desc" },
             take: 10,
         }),
-        prisma.category.findMany(),
+        loadUsableCategories(userId),
     ]);
 
     const categoryIds = categoryBreakdown.map((c) => c.categoryId).filter(Boolean);

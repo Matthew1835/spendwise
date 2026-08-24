@@ -16,6 +16,7 @@ import adminRoutes from "./routes/admin.js";
 import profileRoutes from "./routes/profile.js";
 import exportRoutes from "./routes/export.js";
 import apiRoutes from "./routes/api.js";
+import categoryRoutes from "./routes/categories.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,6 +74,7 @@ app.use("/admin", adminRoutes);
 app.use("/profile", profileRoutes);
 app.use("/export", exportRoutes);
 app.use("/api", apiRoutes);
+app.use("/categories", categoryRoutes);
 
 app.use((req, res) => res.status(404).render("error", { message: "Page not found." }));
 

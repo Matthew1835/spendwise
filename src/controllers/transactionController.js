@@ -1,9 +1,10 @@
 import prisma from "../prismaClient.js";
-import { autoCategorize } from "../services/categorization.js"
+import { autoCategorize } from "../services/categorization.js";
+import { loadUsableCategories } from './categoryController.js';
 
 const ALLOWED_RETURN_PATHS = new Set(['/transactions', '/dashboard']);
 function safeReturnTo(value) {
-  return ALLOWED_RETURN_PATHS.has(value) ? value : '/transactions';
+    return ALLOWED_RETURN_PATHS.has(value) ? value : '/transactions';
 }
 
 function buildWhere(userId, query) {
@@ -20,11 +21,14 @@ function buildWhere(userId, query) {
 }
 
 async function loadTransactionsPageData(req) {
+    const userId = req.session.user.id;
     const where = buildWhere(req.session.user.id, req.query);
+
     const [transactions, categories] = await Promise.all([
         prisma.transaction.findMany({ where, include: { category: true }, orderBy: { transactionDate: "desc" } }),
-        prisma.category.findMany(),
+        loadUsableCategories(userId),
     ]);
+
     return { transactions, categories, filters: req.query };
 }
 
