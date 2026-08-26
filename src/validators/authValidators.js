@@ -12,7 +12,8 @@ export const registerValidator = [
         .normalizeEmail(),
 
     body("password")
-        .isLength({ min: 8 }).withMessage("Password must be at least 8 characters"),
+        .isLength({ min: 8 }).withMessage("Password must be at least 8 characters")
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).+$/).withMessage('Password must contain an uppercase letter, lowercase letter, number, and special character'),
 
     body('confirm_password').custom((value, { req }) => {
         if (value !== req.body.password) {
